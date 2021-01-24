@@ -74,6 +74,7 @@ namespace Game.Inventory
             for (int i = 0; i < numOfSlots; i++)
             {
                 _inventorySlots.Add(new DataInventorySlot(i));
+                _inventorySlots[i].SetContainerIndex(_containerId);
             }
         }
 

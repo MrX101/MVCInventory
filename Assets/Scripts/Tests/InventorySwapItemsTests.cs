@@ -164,7 +164,8 @@ namespace Game.Test
             if (invSlot.HasItem && invSlot.Item.UniqueId == item2.UniqueId)
             {
                 correctItemInContainer2 = true;
-            } 
+            }
+            
             Assert.IsTrue(correctItemInContainer1 && correctItemInContainer2);
             Assert.IsFalse(result);
 

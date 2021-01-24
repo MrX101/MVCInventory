@@ -161,7 +161,7 @@ namespace Game.Inventory
 
         }
 
-        public bool UnEquipItem(ContainerRequest request, out List<OutContainerInfo> outInfo)
+        public bool UnEquipItem(ContainerRequest request, out List<ResultContainerInfo> outInfo)
         {
             if (TakeItem(out var item, request))
             {
@@ -178,9 +178,9 @@ namespace Game.Inventory
 
         //todo Need to make this tell you where it was stored.
         ///Stores Item in first available slot, Does Not store in Equipment & WeaponWheel Slots.
-        public bool StoreItem(ref IItem item, out List<OutContainerInfo> containerInfo)
+        public bool StoreItem(ref IItem item, out List<ResultContainerInfo> containerInfo)
         {
-            containerInfo = new List<OutContainerInfo>();
+            containerInfo = new List<ResultContainerInfo>();
             if (item == null) {  return false; }
             
             foreach (var KVP in _containers)
@@ -215,9 +215,9 @@ namespace Game.Inventory
         /// <param name="item"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public bool StoreItem(ref IItem item, ContainerRequest request, out List<OutContainerInfo> containerInfo)
+        public bool StoreItem(ref IItem item, ContainerRequest request, out List<ResultContainerInfo> containerInfo)
         {
-            containerInfo = new List<OutContainerInfo>();
+            containerInfo = new List<ResultContainerInfo>();
             if (item == null || request == null) { return false; }
 
             if (IsRequestValid(request))
