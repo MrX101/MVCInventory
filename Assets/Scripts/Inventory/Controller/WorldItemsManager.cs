@@ -18,7 +18,7 @@ namespace Game.Inventory
         public void TakeItem( WorldItem worldItem, Inventory userInventory)
         {
             var item = worldItem.TakeItem();
-            userInventory.StoreItem(ref item);
+            userInventory.StoreItem(ref item, out var info);
             ReturnPrefabInstance(worldItem);
         }
     

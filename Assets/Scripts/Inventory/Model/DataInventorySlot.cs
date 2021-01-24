@@ -12,18 +12,20 @@ namespace Game.Inventory
     public class DataInventorySlot
     {
         protected IItem _item;
-        protected int _containerIndex;
+        protected string _containerId;
         protected int _slotIndex;
         
         protected bool _isEquipped = false;
 
-        public int ContainerIndex => _containerIndex;
+        public string ContainerId => _containerId;
         public int SlotIndex => _slotIndex;
+
+        public bool IsEquipped => _isEquipped;
 
         ///Will be null if nothing is stored/equipped
         public Action<IItem> OnItemStoredChanged;
         //Not sure if useful
-        public Action<int> OnContainerIndexChanged;
+        public Action<string> OnContainerIndexChanged;
         public Action<bool, IItem> OnItemEquippedStatus;
 
         public DataInventorySlot(int slotIndex)
@@ -39,9 +41,9 @@ namespace Game.Inventory
 
         public void SetEquipped()
         {
-            if (_isEquipped) { return; }
+            if (IsEquipped) { return; }
             _isEquipped = false;
-            OnItemEquippedStatus?.Invoke(_isEquipped, _item);
+            OnItemEquippedStatus?.Invoke(IsEquipped, _item);
         }
         
 
@@ -55,9 +57,9 @@ namespace Game.Inventory
 
         public void SetUnEquipped()
         {
-            if (!_isEquipped) { return; }
+            if (!IsEquipped) { return; }
             _isEquipped = true;
-            OnItemEquippedStatus?.Invoke(_isEquipped, _item);
+            OnItemEquippedStatus?.Invoke(IsEquipped, _item);
         }
         
         ///Make Duplicate First if needed for storing the stacks.
@@ -152,10 +154,28 @@ namespace Game.Inventory
             return _item.GetItemType();
         }
         
-        public void SetContainerIndex(int index)
+        public void SetContainerIndex(string containerId)
         {
-            _containerIndex = index;
-            OnContainerIndexChanged?.Invoke(_containerIndex);
+            _containerId = containerId;
+            OnContainerIndexChanged?.Invoke(_containerId);
+        }
+
+        /// <summary>
+        /// Returns ItemInfo.NULL if no item is stored in the slot.
+        /// </summary>
+        /// <returns></returns>
+        public ItemInfo GetItemInfo()
+        {
+            if (HasItem())
+            {
+                return new ItemInfo(_item);
+            }
+            return ItemInfo.NULL;
+        }
+
+        public SlotInfo GetSlotInfo()
+        {
+            return new SlotInfo(this);
         }
     }
 }

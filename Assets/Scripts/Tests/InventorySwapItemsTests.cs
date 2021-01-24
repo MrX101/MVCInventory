@@ -24,21 +24,21 @@ namespace Game.Test
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             IItem item2 = new BaseItem {Name = "item2", UniqueId = "item2_Id", MaxStackSize = 10, CurrentStackSize = 1};
-            inventory.StoreItem(ref item1);
-            inventory.StoreItem(ref item2);
+            inventory.StoreItem(ref item1, out var info1);
+            inventory.StoreItem(ref item2, out var info2);
             //inventory.DebugShowAllItems();
 
             var result = inventory.SwapItem(new ContainerRequest("1", 0), new ContainerRequest("1", 1));
 
             var info = inventory.GetContainerInfo("1");
             var invSlot = info.InventorySlots[0];
-            if (invSlot.HasItem() && invSlot.GetUniqueId() == item2.UniqueId)
+            if (invSlot.HasItem && invSlot.Item.UniqueId == item2.UniqueId)
             {
                 correctItemInSlot1 = true;
             }
 
             invSlot = info.InventorySlots[1];
-            if (invSlot.HasItem() && invSlot.GetUniqueId() == item1.UniqueId)
+            if (invSlot.HasItem && invSlot.Item.UniqueId == item1.UniqueId)
             {
                 correctItemInSlot2 = true;
             }
@@ -63,8 +63,8 @@ namespace Game.Test
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             IItem item2 = new BaseItem {Name = "item2", UniqueId = "item2_Id", MaxStackSize = 10, CurrentStackSize = 1};
-            inventory.StoreItem(ref item1);
-            inventory.StoreItem(ref item2, new ContainerRequest("2", 0));
+            inventory.StoreItem(ref item1, out var info1);
+            inventory.StoreItem(ref item2, new ContainerRequest("2", 0), out var info2);
             //inventory.DebugShowAllItems();
 
             var result = inventory.SwapItem(new ContainerRequest("1", 0), new ContainerRequest("2", 0));
@@ -73,14 +73,14 @@ namespace Game.Test
             
             var info = inventory.GetContainerInfo("1");
             var invSlot = info.InventorySlots[0];
-            if (invSlot.HasItem() && invSlot.GetUniqueId() == item2.UniqueId)
+            if (invSlot.HasItem && invSlot.Item.UniqueId == item2.UniqueId)
             {
                 correctItemInContainer1 = true;
             }
             
             info = inventory.GetContainerInfo("2");
             invSlot = info.InventorySlots[0];
-            if (invSlot.HasItem() && invSlot.GetUniqueId() == item1.UniqueId)
+            if (invSlot.HasItem && invSlot.Item.UniqueId == item1.UniqueId)
             {
                 correctItemInContainer2 = true;
             }
@@ -103,7 +103,7 @@ namespace Game.Test
             inventory._containersToCreate = settingsList;
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
-            inventory.StoreItem(ref item1);
+            inventory.StoreItem(ref item1 , out var info1);
             //inventory.DebugShowAllItems();
 
             var result = inventory.SwapItem(new ContainerRequest("1", 0), new ContainerRequest("2", 0));
@@ -112,14 +112,14 @@ namespace Game.Test
             
             var info = inventory.GetContainerInfo("1");
             var invSlot = info.InventorySlots[0];
-            if (!invSlot.HasItem())
+            if (!invSlot.HasItem)
             {
                 correctItemInContainer1 = true;
             }
             
             info = inventory.GetContainerInfo("2");
             invSlot = info.InventorySlots[0];
-            if (invSlot.HasItem() && invSlot.GetUniqueId() == item1.UniqueId)
+            if (invSlot.HasItem && invSlot.Item.UniqueId == item1.UniqueId)
             {
                 correctItemInContainer2 = true;
             }
@@ -144,8 +144,8 @@ namespace Game.Test
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             IItem item2 = new BaseItem {Name = "item2", UniqueId = "item2_Id", MaxStackSize = 10, CurrentStackSize = 1};
-            inventory.StoreItem(ref item1);
-            inventory.StoreItem(ref item2, new ContainerRequest("2", 0));
+            inventory.StoreItem(ref item1, out var info1);
+            inventory.StoreItem(ref item2, new ContainerRequest("2", 0), out var info2);
             //inventory.DebugShowAllItems();
 
             var result = inventory.SwapItem(new ContainerRequest("1", 0), new ContainerRequest("2", 5));
@@ -154,14 +154,14 @@ namespace Game.Test
             
             var info = inventory.GetContainerInfo("1");
             var invSlot = info.InventorySlots[0];
-            if (invSlot.HasItem() && invSlot.GetUniqueId() == item1.UniqueId)
+            if (invSlot.HasItem && invSlot.Item.UniqueId == item1.UniqueId)
             {
                 correctItemInContainer1 = true;
             }
             
             info = inventory.GetContainerInfo("2");
             invSlot = info.InventorySlots[0];
-            if (invSlot.HasItem() && invSlot.GetUniqueId() == item2.UniqueId)
+            if (invSlot.HasItem && invSlot.Item.UniqueId == item2.UniqueId)
             {
                 correctItemInContainer2 = true;
             } 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
 namespace Game.Inventory
@@ -17,7 +18,8 @@ namespace Game.Inventory
         protected ItemType[] _allowedItemTypes;
         protected string _containerId;
 
-        protected Dictionary<string, List<int>> _itemIdSlotDict = new Dictionary<string, List<int>> (); //key is item uniqueID, stores all slotsIndexes with that itemId.
+        protected Dictionary<string, List<int>> _itemIdIndex = new Dictionary<string, List<int>> (); 
+        //key is item uniqueID, stores all slotsIndexes with that itemId.
 
         public ItemType[] AllowedItemTypes => _allowedItemTypes;
         public string ContainerId => _containerId;
@@ -47,6 +49,23 @@ namespace Game.Inventory
                 return false;
             }
             OutSlotsData = _inventorySlots.ToArray();
+            return true;
+        }
+        
+        public bool GetItemSlotsInfo(out SlotInfo[] OutSlotsData)
+        {
+            if (_inventorySlots == null || _inventorySlots.Count == 0)
+            {
+                OutSlotsData = null;
+                return false;
+            }
+
+            SlotInfo[] infos = new SlotInfo[_inventorySlots.Count];
+            for (int i = 0; i < _inventorySlots.Count; i++)
+            {
+                infos[i] = _inventorySlots[i].GetSlotInfo();
+            }
+            OutSlotsData = infos;
             return true;
         }
         
@@ -98,11 +117,11 @@ namespace Game.Inventory
         public void TakeItem(int index, out IItem item)
         {
             item =_inventorySlots[index].TakeItem();
-            var count = _itemIdSlotDict[item.UniqueId].Count;
-            _itemIdSlotDict[item.UniqueId].Remove(index);
-            if (_itemIdSlotDict[item.UniqueId].Count < 1)
+            var count = _itemIdIndex[item.UniqueId].Count;
+            _itemIdIndex[item.UniqueId].Remove(index);
+            if (_itemIdIndex[item.UniqueId].Count < 1)
             {
-                _itemIdSlotDict.Remove(item.UniqueId);
+                _itemIdIndex.Remove(item.UniqueId);
             }
             //todo need to update dictionary
         }
@@ -127,10 +146,10 @@ namespace Game.Inventory
         /// Returns amount left, if there wasn't enough.
         public int GetSpecificAmount_SpecificItem_FromAllSlots(string itemId, int amount, out IItem outItem)
         {
-            int i = _itemIdSlotDict[itemId][0]; //todo fix this line one we can more easily duplicate Items, since it will make zero sense to anyone else.
+            int i = _itemIdIndex[itemId][0]; //todo fix this line one we can more easily duplicate Items, since it will make zero sense to anyone else.
             var tempItem = GetEmptyDuplicate(i);
 
-            foreach (var slotIndex in _itemIdSlotDict[itemId])
+            foreach (var slotIndex in _itemIdIndex[itemId])
             {
                 if (_inventorySlots[slotIndex].GetCurrentStackSize() < amount)
                 {
@@ -161,7 +180,7 @@ namespace Game.Inventory
             _inventorySlots[slotIndex].ConsumeStack(slotIndex, amount);
             if (!_inventorySlots[slotIndex].HasItem())
             {
-                _itemIdSlotDict[id].Remove(slotIndex);
+                _itemIdIndex[id].Remove(slotIndex);
             }
         }
         
@@ -186,46 +205,68 @@ namespace Game.Inventory
             var idTwo = _inventorySlots[slotIndexTwo].GetUniqueId();
            _inventorySlots[slotIndexTwo] = temp;
            
-           _itemIdSlotDict[idOne].Remove(slotIndexOne);
-           _itemIdSlotDict[idOne].Add(slotIndexTwo);
+           _itemIdIndex[idOne].Remove(slotIndexOne);
+           _itemIdIndex[idOne].Add(slotIndexTwo);
            
-           _itemIdSlotDict[idTwo].Remove(slotIndexTwo);
-           _itemIdSlotDict[idTwo].Add(slotIndexOne);
+           _itemIdIndex[idTwo].Remove(slotIndexTwo);
+           _itemIdIndex[idTwo].Add(slotIndexOne);
         }
 
         ///Store Item Into EmptySlot
         public virtual void StoreItem(ref IItem itemRef, int slotIndex)
         {
             _inventorySlots[slotIndex].StoreItem(ref itemRef);
-            UpdateDictionary(itemRef.UniqueId, slotIndex);
+            AddToIndex(itemRef.UniqueId, slotIndex);
         }
 
-        private void UpdateDictionary(string itemId, int slotIndex)
+        private void AddToIndex(string itemId, int slotIndex)
         {
-            if (!_itemIdSlotDict.ContainsKey(itemId))
+            if (!_itemIdIndex.ContainsKey(itemId))
             {
-                _itemIdSlotDict.Add(itemId, new List<int> {slotIndex});
+                _itemIdIndex.Add(itemId, new List<int> {slotIndex});
             }
-            _itemIdSlotDict[itemId].Add(slotIndex);
+            _itemIdIndex[itemId].Add(slotIndex);
+        }
+        
+        private void RemoveFromIndex(string itemId, int slotIndex)
+        {
+            if (_itemIdIndex.ContainsKey(itemId))
+            {
+                _itemIdIndex[itemId].Remove(slotIndex);
+                if (_itemIdIndex[itemId].Count < 1)
+                {
+                    _itemIdIndex.Remove(itemId);
+                }
+            }
+            else
+            {
+                Debug.Log("Error: ItemId: "+ itemId.ToString() + " Not Found in IndexDictionary");
+            }
         }
         
         
         ///Returns False if stack wasn't reduced to zero in existing stacks.
-        public bool StackItemInExistingStacks(ref IItem itemref)
+        ///Out ContainerInfo will be null if stack wasn't stored anywhere.
+        public bool StackItemInExistingStacks(ref IItem itemref, out List<OutContainerInfo> outInfo)
         {
-            if (_itemIdSlotDict.ContainsKey(itemref.UniqueId))
+            outInfo = null;
+            if (_itemIdIndex.ContainsKey(itemref.UniqueId))
             {
-                var indexList = _itemIdSlotDict[itemref.UniqueId];
+                List<OutContainerInfo> outList = new List<OutContainerInfo>();
+                var indexList = _itemIdIndex[itemref.UniqueId];
                 foreach (var i in indexList)
                 {
                     if (_inventorySlots[i].HasItem() && _inventorySlots[i].GetRemainingStackSize() > 0)
                     {
+                        outList.Add(new OutContainerInfo(_containerId, i));
                         if (_inventorySlots[i].StackItem(ref itemref))
                         {
+                            outInfo = outList;
                             return true;
                         }
                     }
                 }
+                outInfo = outList;
             }
             return false;
         }
@@ -247,14 +288,16 @@ namespace Game.Inventory
         {
             var id = _inventorySlots[slotIndex].GetUniqueId();
             _inventorySlots[slotIndex].DeleteItem();
-            _itemIdSlotDict[id].Remove(slotIndex);
+            RemoveFromIndex(id, slotIndex);
         }
         
-        public bool StoreInFirstEmptySlot(ref IItem item)
+        public bool StoreInFirstEmptySlot(ref IItem item, out OutContainerInfo info)
         {
-            if (FindFirstEmptySlotIndex(out var index))
+            info = OutContainerInfo.NULL;
+            if (FindFirstEmptySlotIndex(out var slotIndex))
             {
-                StoreItem(ref item, index);
+                StoreItem(ref item, slotIndex);
+                info = new OutContainerInfo(_containerId, slotIndex);
                 return true;
             }
             return false;
@@ -265,37 +308,39 @@ namespace Game.Inventory
             return _inventorySlots[slotIndex].GetUniqueId();
         }
 
-        protected void SetSlotIndexDictionary()
-        {
-            for (int i = 0; i < _inventorySlots.Count; i++)
-            {
-                if (!_inventorySlots[i].HasItem()) { continue; }
-                
-                if (!_itemIdSlotDict.ContainsKey(_inventorySlots[i].GetUniqueId()))
-                {
-                    var list = new List<int>();
-                    list.Add(i);
-                    _itemIdSlotDict.Add(_inventorySlots[i].GetUniqueId(),list);
-                }
-                else
-                {
-                    _itemIdSlotDict[_inventorySlots[i].GetUniqueId()].Add(i);
-                }
-            }
-        }
+        //todo Decide, in what situation is this useful since items will always get added/removed?...
+        //todo ...Possibly to avoid saving the index values into a file?
+        // protected void SetSlotIndexDictionary()
+        // {
+        //     for (int i = 0; i < _inventorySlots.Count; i++)
+        //     {
+        //         if (!_inventorySlots[i].HasItem()) { continue; }
+        //         
+        //         if (!_itemIdSlotDict.ContainsKey(_inventorySlots[i].GetUniqueId()))
+        //         {
+        //             var list = new List<int>();
+        //             list.Add(i);
+        //             _itemIdSlotDict.Add(_inventorySlots[i].GetUniqueId(),list);
+        //         }
+        //         else
+        //         {
+        //             _itemIdSlotDict[_inventorySlots[i].GetUniqueId()].Add(i);
+        //         }
+        //     }
+        // }
         
         /// False if no empty slots
-        public bool FindFirstEmptySlotIndex(out int index)
+        public bool FindFirstEmptySlotIndex(out int slotIndex)
         {
             for (int i = 0; i < _inventorySlots.Count; i++)
             {
                 if (!_inventorySlots[i].HasItem())
                 {
-                    index = i;
+                    slotIndex = i;
                     return true;
                 }
             }
-            index = -1;
+            slotIndex = -1;
             return false;
         }
         
@@ -335,7 +380,7 @@ namespace Game.Inventory
 
         public bool HasItemsOfUniqueId(string uniqueId)
         {
-            return _itemIdSlotDict.ContainsKey(uniqueId);
+            return _itemIdIndex.ContainsKey(uniqueId);
         }
     }
     

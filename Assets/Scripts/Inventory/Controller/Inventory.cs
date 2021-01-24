@@ -47,11 +47,12 @@ namespace Game.Inventory
             foreach (var containerInfo in GetAllContainersInfo())
             {
                 Debug.Log("Container: "+ containerInfo.Id + " has "+containerInfo.InventorySlots.Length + " slots");
-                foreach (var slot in containerInfo.InventorySlots)
+                foreach (SlotInfo slot in containerInfo.InventorySlots)
                 {
-                    if (slot.HasItem())
+                    if (slot.HasItem)
                     {
-                        Debug.Log("Item Name: " + slot.GetName() + " slot Index: " + slot.SlotIndex);
+                        Debug.Log( "Slot Index: " + slot.SlotIndex + " has Item:\n" +
+                                   "Name: " + slot.Item.Name +" Id: "+slot.Item.UniqueId);
                     }
                 }
             }
@@ -160,20 +161,27 @@ namespace Game.Inventory
 
         }
 
-        public bool UnEquipItem(ContainerRequest request)
+        public bool UnEquipItem(ContainerRequest request, out List<OutContainerInfo> outInfo)
         {
             if (TakeItem(out var item, request))
             {
-                return StoreItem(ref item);
+                bool result = StoreItem(ref item, out var info);
+                if (result)
+                {
+                    outInfo = info;
+                    return true;
+                }
             }
+            outInfo = null;
             return false;
         }
 
         //todo Need to make this tell you where it was stored.
         ///Stores Item in first available slot, Does Not store in Equipment & WeaponWheel Slots.
-        public bool StoreItem(ref IItem item)
+        public bool StoreItem(ref IItem item, out List<OutContainerInfo> containerInfo)
         {
-            if (item == null) { return false; }
+            containerInfo = new List<OutContainerInfo>();
+            if (item == null) {  return false; }
             
             foreach (var KVP in _containers)
             {
@@ -183,29 +191,33 @@ namespace Game.Inventory
                 
                 if (container.CanStoreItemType(item.GetItemType()) && container.HasItemsOfUniqueId(item.UniqueId))
                 {
-                    if (container.StackItemInExistingStacks(ref item))
+                    if (container.StackItemInExistingStacks(ref item, out var info))
                     {
+                        containerInfo.AddRange(info);
                         return true;
                     }
                 }
                 if (item != null) //In case it was partially stacked, but still has stacks left.
                 {
-                    if (container.StoreInFirstEmptySlot(ref item))
+                    if (container.StoreInFirstEmptySlot(ref item, out var info))
                     {
+                        containerInfo.Add(info);
                         return true;
                     }
                 }
             }
             return false;
         }
+        
         /// <summary>
         /// Store Item in Specific container/Slot.
         /// </summary>
         /// <param name="item"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public bool StoreItem(ref IItem item, ContainerRequest request)
+        public bool StoreItem(ref IItem item, ContainerRequest request, out List<OutContainerInfo> containerInfo)
         {
+            containerInfo = new List<OutContainerInfo>();
             if (item == null || request == null) { return false; }
 
             if (IsRequestValid(request))
@@ -213,15 +225,24 @@ namespace Game.Inventory
                 var container = _containers[request.ContainerId];
                 if (container.CanStoreItemType(item.GetItemType()) && container.HasItemsOfUniqueId(item.UniqueId))
                 {
-                    if (container.StackItemInExistingStacks(ref item))
+                    var wasSuccessfullyStacked = container.StackItemInExistingStacks(ref item, out var info);
+                    
+                    if (info != null)
+                    {
+                        containerInfo.AddRange(info);
+                    }
+                    
+                    if (wasSuccessfullyStacked)
                     {
                         return true;
                     }
+
                 }
                 if (item != null) //In case it was partially stacked, but still has stacks left.
                 {
-                    if (container.StoreInFirstEmptySlot(ref item))
+                    if (container.StoreInFirstEmptySlot(ref item, out var info))
                     {
+                        containerInfo.Add(info);
                         return true;
                     }
                 }
