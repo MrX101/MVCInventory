@@ -25,13 +25,13 @@ namespace Game.Inventory
     }
 
     [Serializable]
-    public struct OutContainerInfo
+    public struct ResultContainerInfo
     {
-        public static readonly OutContainerInfo NULL = new OutContainerInfo("", -1);
+        public static readonly ResultContainerInfo NULL = new ResultContainerInfo("", -1);
         public string ContainerId;
         public int SlotId;
 
-        public OutContainerInfo(string containerId, int slotId)
+        public ResultContainerInfo(string containerId, int slotId)
         {
             ContainerId = containerId;
             SlotId = slotId;

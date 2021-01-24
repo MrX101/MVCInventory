@@ -248,18 +248,18 @@ namespace Game.Inventory
         
         ///Returns False if stack wasn't reduced to zero in existing stacks.
         ///Out ContainerInfo will be null if stack wasn't stored anywhere.
-        public bool StackItemInExistingStacks(ref IItem itemref, out List<OutContainerInfo> outInfo)
+        public bool StackItemInExistingStacks(ref IItem itemref, out List<ResultContainerInfo> outInfo)
         {
             outInfo = null;
             if (_itemIdIndex.ContainsKey(itemref.UniqueId))
             {
-                List<OutContainerInfo> outList = new List<OutContainerInfo>();
+                List<ResultContainerInfo> outList = new List<ResultContainerInfo>();
                 var indexList = _itemIdIndex[itemref.UniqueId];
                 foreach (var i in indexList)
                 {
                     if (_inventorySlots[i].HasItem() && _inventorySlots[i].GetRemainingStackSize() > 0)
                     {
-                        outList.Add(new OutContainerInfo(_containerId, i));
+                        outList.Add(new ResultContainerInfo(_containerId, i));
                         if (_inventorySlots[i].StackItem(ref itemref))
                         {
                             outInfo = outList;
@@ -292,13 +292,13 @@ namespace Game.Inventory
             RemoveFromIndex(id, slotIndex);
         }
         
-        public bool StoreInFirstEmptySlot(ref IItem item, out OutContainerInfo info)
+        public bool StoreInFirstEmptySlot(ref IItem item, out ResultContainerInfo info)
         {
-            info = OutContainerInfo.NULL;
+            info = ResultContainerInfo.NULL;
             if (FindFirstEmptySlotIndex(out var slotIndex))
             {
                 StoreItem(ref item, slotIndex);
-                info = new OutContainerInfo(_containerId, slotIndex);
+                info = new ResultContainerInfo(_containerId, slotIndex);
                 return true;
             }
             return false;
