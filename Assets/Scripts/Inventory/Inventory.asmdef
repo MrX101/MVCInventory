@@ -1,7 +1,8 @@
 {
     "name": "Inventory",
     "references": [
-        "GUID:cf8fced98bb24b0418e8d3dc34cbd554"
+        "GUID:cf8fced98bb24b0418e8d3dc34cbd554",
+        "GUID:6055be8ebefd69e48b49212b09b47b2f"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 
@@ -248,18 +249,18 @@ namespace Game.Inventory
         
         ///Returns False if stack wasn't reduced to zero in existing stacks.
         ///Out ContainerInfo will be null if stack wasn't stored anywhere.
-        public bool StackItemInExistingStacks(ref IItem itemref, out List<ResultContainerInfo> outInfo)
+        public bool StackItemInExistingStacks(ref IItem itemref, out List<SlotIdentifier> outInfo)
         {
             outInfo = null;
             if (_itemIdIndex.ContainsKey(itemref.UniqueId))
             {
-                List<ResultContainerInfo> outList = new List<ResultContainerInfo>();
+                List<SlotIdentifier> outList = new List<SlotIdentifier>();
                 var indexList = _itemIdIndex[itemref.UniqueId];
                 foreach (var i in indexList)
                 {
                     if (_inventorySlots[i].HasItem() && _inventorySlots[i].GetRemainingStackSize() > 0)
                     {
-                        outList.Add(new ResultContainerInfo(_containerId, i));
+                        outList.Add(new SlotIdentifier(_containerId, i));
                         if (_inventorySlots[i].StackItem(ref itemref))
                         {
                             outInfo = outList;
@@ -292,13 +293,13 @@ namespace Game.Inventory
             RemoveFromIndex(id, slotIndex);
         }
         
-        public bool StoreInFirstEmptySlot(ref IItem item, out ResultContainerInfo info)
+        public bool StoreInFirstEmptySlot(ref IItem item, out SlotIdentifier info)
         {
-            info = ResultContainerInfo.NULL;
+            info = null;
             if (FindFirstEmptySlotIndex(out var slotIndex))
             {
                 StoreItem(ref item, slotIndex);
-                info = new ResultContainerInfo(_containerId, slotIndex);
+                info = new SlotIdentifier(_containerId, slotIndex);
                 return true;
             }
             return false;

@@ -24,19 +24,19 @@ namespace Game.Inventory
         }
     }
 
-    [Serializable]
-    public struct ResultContainerInfo
-    {
-        public static readonly ResultContainerInfo NULL = new ResultContainerInfo("", -1);
-        public string ContainerId;
-        public int SlotId;
-
-        public ResultContainerInfo(string containerId, int slotId)
-        {
-            ContainerId = containerId;
-            SlotId = slotId;
-        }
-    }
+    // [Serializable]
+    // public struct ResultContainerInfo
+    // {
+    //     public static readonly ResultContainerInfo NULL = new ResultContainerInfo("", -1);
+    //     public string ContainerId;
+    //     public int SlotId;
+    //
+    //     public ResultContainerInfo(string containerId, int slotId)
+    //     {
+    //         ContainerId = containerId;
+    //         SlotId = slotId;
+    //     }
+    // }
 
     [Serializable]
     public struct SlotInfo

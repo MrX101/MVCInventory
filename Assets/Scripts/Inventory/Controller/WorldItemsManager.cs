@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Game.Inventory
 {
-    [CreateAssetMenu(fileName = "FILENAME", menuName = "MENUNAME", order = 0)]
+    [CreateAssetMenu(fileName = "WorldItemsManager", menuName = "Create WorldItemsManager", order = 0)]
     public class WorldItemsManager : ScriptableObject
     {
         public static WorldItemsManager Singleton;

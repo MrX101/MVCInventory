@@ -28,7 +28,7 @@ namespace Game.Test
             
             IItem item1 = new BaseItem{Name = "item1", UniqueId = "item1_Id", MaxStackSize = 1, CurrentStackSize = 1};
             var isItemStored = inventory.StoreItem(ref item1, out var info1);
-            var isItemEquipped = inventory.EquipItem(new ContainerRequest("1",0), new ContainerRequest("2", 0));
+            var isItemEquipped = inventory.EquipItem(new SlotIdentifier("1",0), new SlotIdentifier("2", 0));
             //inventory.DebugShowAllItems();
 
             var info = inventory.GetContainerInfo("2");
@@ -67,9 +67,9 @@ namespace Game.Test
             
             IItem item1 = new BaseItem{Name = "item1", UniqueId = "item1_Id", MaxStackSize = 1, CurrentStackSize = 1};
             var isItemStored = inventory.StoreItem(ref item1, out var outInfo1);
-            var isItemEquipped = inventory.EquipItem(new ContainerRequest("1",0), new ContainerRequest("2", 0));
+            var isItemEquipped = inventory.EquipItem(new SlotIdentifier("1",0), new SlotIdentifier("2", 0));
             inventory.DebugShowAllItems();
-            var isItemUnequipped = inventory.UnEquipItem(new ContainerRequest("2", 0), out var outInfo2);
+            var isItemUnequipped = inventory.UnEquipItem(new SlotIdentifier("2", 0), out var outInfo2);
             //inventory.DebugShowAllItems();
 
             var info = inventory.GetContainerInfo("1");
@@ -116,8 +116,8 @@ namespace Game.Test
             bool[] isItemUnequippedArray = new bool[numOfTimes];
             for (int i = 0; i < numOfTimes; i++)
             {
-                isItemEquippedArray[i] = inventory.EquipItem(new ContainerRequest("1",0), new ContainerRequest("2", 0));
-                isItemUnequippedArray[i] = inventory.UnEquipItem(new ContainerRequest("2", 0), out var outContainer2);
+                isItemEquippedArray[i] = inventory.EquipItem(new SlotIdentifier("1",0), new SlotIdentifier("2", 0));
+                isItemUnequippedArray[i] = inventory.UnEquipItem(new SlotIdentifier("2", 0), out var outContainer2);
             }
             
             //inventory.DebugShowAllItems();

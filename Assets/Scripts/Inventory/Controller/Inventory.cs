@@ -101,7 +101,7 @@ namespace Game.Inventory
             return amount;
         }
 
-        public bool UseConsumable(ContainerRequest request,int amount = 1)
+        public bool UseConsumable(SlotIdentifier request,int amount = 1)
         {
             if (IsRequestValid(request) && !IsRequestSlotEmpty(request) 
                  && GetRequestItemType(request) == ItemType.Consumable && GetRequestStackSize(request) >= amount )
@@ -112,7 +112,7 @@ namespace Game.Inventory
             return false;
         }
 
-        public bool DropItem(ContainerRequest request, Vector3 position, Quaternion rotation)
+        public bool DropItem(SlotIdentifier request, Vector3 position, Quaternion rotation)
         {
             if (TakeItem(out var item, request))
             {
@@ -127,7 +127,7 @@ namespace Game.Inventory
             return new ContainerInfo(_containers[containerId]);
         }
 
-        public bool SetPrimary(ContainerRequest request)
+        public bool SetPrimary(SlotIdentifier request)
         {
             if (IsRequestValid(request) && !IsRequestSlotEmpty(request))
             {
@@ -139,7 +139,7 @@ namespace Game.Inventory
             return false;
         }
 
-        public bool DeleteItem(ContainerRequest request)
+        public bool DeleteItem(SlotIdentifier request)
         {
             if (!IsRequestValid(request) || IsRequestSlotEmpty(request))
             {
@@ -149,7 +149,7 @@ namespace Game.Inventory
             return true;
         }
 
-        public bool TakeItem(out IItem outItem, ContainerRequest request)
+        public bool TakeItem(out IItem outItem, SlotIdentifier request)
         {
             if (!IsRequestValid(request) || IsRequestSlotEmpty(request))
             {
@@ -161,7 +161,7 @@ namespace Game.Inventory
 
         }
 
-        public bool UnEquipItem(ContainerRequest request, out List<ResultContainerInfo> outInfo)
+        public bool UnEquipItem(SlotIdentifier request, out List<SlotIdentifier> outInfo)
         {
             if (TakeItem(out var item, request))
             {
@@ -178,9 +178,9 @@ namespace Game.Inventory
 
         //todo Need to make this tell you where it was stored.
         ///Stores Item in first available slot, Does Not store in Equipment & WeaponWheel Slots.
-        public bool StoreItem(ref IItem item, out List<ResultContainerInfo> containerInfo)
+        public bool StoreItem(ref IItem item, out List<SlotIdentifier> containerInfo)
         {
-            containerInfo = new List<ResultContainerInfo>();
+            containerInfo = new List<SlotIdentifier>();
             if (item == null) {  return false; }
             
             foreach (var KVP in _containers)
@@ -215,9 +215,9 @@ namespace Game.Inventory
         /// <param name="item"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public bool StoreItem(ref IItem item, ContainerRequest request, out List<ResultContainerInfo> containerInfo)
+        public bool StoreItem(ref IItem item, SlotIdentifier request, out List<SlotIdentifier> containerInfo)
         {
-            containerInfo = new List<ResultContainerInfo>();
+            containerInfo = new List<SlotIdentifier>();
             if (item == null || request == null) { return false; }
 
             if (IsRequestValid(request))
@@ -250,7 +250,7 @@ namespace Game.Inventory
             return false;
         }
 
-        public bool SplitStack(ContainerRequest fromRequest, ContainerRequest toRequest)
+        public bool SplitStack(SlotIdentifier fromRequest, SlotIdentifier toRequest)
         {
             if (IsRequestValid(fromRequest) && IsRequestValid(toRequest) 
                 && !IsRequestSlotEmpty(fromRequest) && IsRequestSlotEmpty(toRequest)
@@ -265,7 +265,7 @@ namespace Game.Inventory
 
 
         ///Swaps slots of items, still works if 1 is empty
-        public bool SwapItem(ContainerRequest fromRequest, ContainerRequest toRequest)
+        public bool SwapItem(SlotIdentifier fromRequest, SlotIdentifier toRequest)
         {
             if (IsRequestValid(fromRequest) && IsRequestValid(toRequest))
             {
@@ -302,7 +302,7 @@ namespace Game.Inventory
         }
 
         /// Use to equip Item into an empty Equip Slot;
-        public bool EquipItem(ContainerRequest fromRequest, ContainerRequest toRequest)
+        public bool EquipItem(SlotIdentifier fromRequest, SlotIdentifier toRequest)
         {
             if (IsRequestValid(fromRequest) && IsRequestValid(toRequest) && !IsRequestSlotEmpty(fromRequest))
             {
@@ -322,7 +322,7 @@ namespace Game.Inventory
             return false;
         }
 
-        private void InternalStackInSpecificSlot(ContainerRequest fromRequest, ContainerRequest toRequest,
+        private void InternalStackInSpecificSlot(SlotIdentifier fromRequest, SlotIdentifier toRequest,
             ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer)
         {
             fromContainer.TakeItem(fromRequest.SlotIndex, out var fromItem2);
@@ -330,7 +330,7 @@ namespace Game.Inventory
             fromContainer.StoreItem(ref fromItem2, fromRequest.SlotIndex);
         }
 
-        private void InternalSwap(ContainerRequest fromRequest, ContainerRequest toRequest,
+        private void InternalSwap(SlotIdentifier fromRequest, SlotIdentifier toRequest,
             ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer)
         {
             fromContainer.TakeItem(fromRequest.SlotIndex, out var fromItem);
@@ -339,14 +339,14 @@ namespace Game.Inventory
             toContainer.StoreItem(ref fromItem, toRequest.SlotIndex);
         }
         
-        private void InternalMoveItem(ContainerRequest fromRequest, ContainerRequest toRequest,
+        private void InternalMoveItem(SlotIdentifier fromRequest, SlotIdentifier toRequest,
             ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer)
         {
             fromContainer.TakeItem(fromRequest.SlotIndex, out var fromItem);
             toContainer.StoreItem(ref fromItem, toRequest.SlotIndex);
         }
 
-        private bool CanSlotsStack(ContainerRequest fromRequest, ContainerRequest toRequest)
+        private bool CanSlotsStack(SlotIdentifier fromRequest, SlotIdentifier toRequest)
         {
             return _containers[fromRequest.ContainerId].GetItemIdOfSlot(fromRequest.SlotIndex) 
                    == _containers[toRequest.ContainerId].GetItemIdOfSlot(toRequest.SlotIndex);
@@ -364,21 +364,21 @@ namespace Game.Inventory
             return containersInfo;
         }
 
-        private ItemType GetRequestItemType(ContainerRequest request)
+        private ItemType GetRequestItemType(SlotIdentifier request)
         {
             return _containers[request.ContainerId].GetItemTypeOfItemInSlot(request.SlotIndex);
         }
 
-        private bool IsRequestSlotEmpty(ContainerRequest request)
+        private bool IsRequestSlotEmpty(SlotIdentifier request)
         {
             return _containers[request.ContainerId].SlotIsEmpty(request.SlotIndex);
         }
 
         // Confirms the ContainerId and slotIndex exist, nothing more.
 
-        private bool IsRequestValid(ContainerRequest containerRequest)
+        private bool IsRequestValid(SlotIdentifier slotIdentifier)
         {
-            return IsValidContainerId(containerRequest.ContainerId) && IsValidSlotIndex(containerRequest.ContainerId, containerRequest.SlotIndex);
+            return IsValidContainerId(slotIdentifier.ContainerId) && IsValidSlotIndex(slotIdentifier.ContainerId, slotIdentifier.SlotIndex);
         }
 
         private bool IsValidContainerId(string containerId)
@@ -396,7 +396,7 @@ namespace Game.Inventory
             return _containers[containerId].isValidSlotIndex(slotIndex);
         }
 
-        private int GetRequestStackSize(ContainerRequest fromRequest)
+        private int GetRequestStackSize(SlotIdentifier fromRequest)
         {
             return _containers[fromRequest.ContainerId].GetCurrentStackSize(fromRequest.SlotIndex);
         }

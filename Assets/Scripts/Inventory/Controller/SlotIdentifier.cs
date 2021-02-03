@@ -3,17 +3,17 @@
 namespace Game.Inventory
 {
     [Serializable]
-    public class ContainerRequest
+    public class SlotIdentifier
     {
         public string ContainerId;
         public int SlotIndex;
 
-        public ContainerRequest()
+        public SlotIdentifier()
         {
             
         }
 
-        public ContainerRequest(string containerId, int slotIndex)
+        public SlotIdentifier(string containerId, int slotIndex)
         {
             ContainerId = containerId;
             SlotIndex = slotIndex;
