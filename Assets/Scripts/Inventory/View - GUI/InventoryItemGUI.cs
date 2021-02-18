@@ -1,7 +1,7 @@
 ﻿using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using TMPro;
 using UnityEngine.UI;
 
 namespace Game.Inventory.GUI
@@ -11,18 +11,19 @@ namespace Game.Inventory.GUI
         private SlotIdentifier _slotId;
 
         private RectTransform _rectTransform;
-        private Canvas _canvas;
+        private CanvasScaler _canvas;
         private Image _image;
         private TextMeshProUGUI _stackAmount;
-         
-        
-        private bool _isInSlot;
-        
+
         private ItemInfo _item;
+
+        private bool _isBeingDragged;
+        private Vector2 _originalPosition;
         
-        private Action<SlotIdentifier> OnBeginDragEvent;
-        private Action<SlotIdentifier> OnEndDragEvent;
-        private Action<SlotIdentifier> OnClickedEvent;
+        public Action<InventoryItemGUI> OnBeginDragEvent;
+        public Action<InventoryItemGUI> OnEndDragEvent;
+        public Action<InventoryItemGUI> OnClickedEvent;
+
 
         public SlotIdentifier SlotId
         {
@@ -33,7 +34,8 @@ namespace Game.Inventory.GUI
         private void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
-            _canvas = GetComponentInParent<Canvas>();
+            _stackAmount = GetComponentInChildren<TextMeshProUGUI>();
+            _image = GetComponent<Image>();
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -43,31 +45,61 @@ namespace Game.Inventory.GUI
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            OnBeginDragEvent?.Invoke(_slotId);
+            if (_canvas == null)
+            {
+                _canvas = GetComponentInParent<CanvasScaler>();
+            }
+            _isBeingDragged = true;
+            _image.raycastTarget = false;
+            OnBeginDragEvent?.Invoke(this);
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            OnEndDragEvent?.Invoke(_slotId);
+            if (_isBeingDragged)
+            {
+                //_rectTransform.SetParent(_currentParent);
+                //_rectTransform.localPosition  = Vector2.zero;
+                //goto original parent location.
+                _rectTransform.anchoredPosition = _originalPosition;
+            }
+            _image.raycastTarget = true;
+            OnEndDragEvent?.Invoke(this);
         }
 
         public void OnPointerClick(PointerEventData eventData)
         {
-            OnClickedEvent?.Invoke(_slotId);
+            OnClickedEvent?.Invoke(this);
         }
 
-        public void UpdateInfo(ItemInfo itemInfo )
+        public void SetItemInfo(ItemInfo itemInfo )
         {
             _item = itemInfo;
-            UpdateLook();
+            UpdateSpriteAndStackSize();
         }
 
-        public void SetParent(RectTransform rect)
+        public void PlaceInSlot(RectTransform rect, SlotIdentifier slotId)
         {
-            _rectTransform.parent = rect;
+            _slotId = slotId;
+            _isBeingDragged = false;
+            if (_rectTransform == null)
+            {
+                Awake();
+            }
+            _rectTransform.anchoredPosition = rect.anchoredPosition;
+            _rectTransform.sizeDelta = rect.sizeDelta;
+            _rectTransform.anchorMin = rect.anchorMin;
+            _rectTransform.anchorMax = rect.anchorMax;
+            _originalPosition = rect.anchoredPosition;
         }
 
-        private void UpdateLook()
+        public void ReturnToSlot()
+        {
+            _isBeingDragged = false;
+            _rectTransform.anchoredPosition = _originalPosition;
+        }
+
+        private void UpdateSpriteAndStackSize()
         {
             _image.sprite = _item.Sprite;
             _stackAmount.SetText(_item.CurrentStackSize.ToString());

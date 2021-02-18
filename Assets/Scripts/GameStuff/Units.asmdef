@@ -1,0 +1,17 @@
+{
+    "name": "Units",
+    "references": [
+        "GUID:e5dfe5a49419e3e4abdbd2e34e3219c3",
+        "GUID:776d03a35f1b52c4a9aed9f56d7b4229",
+        "GUID:cf8fced98bb24b0418e8d3dc34cbd554"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

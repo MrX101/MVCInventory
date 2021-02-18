@@ -19,17 +19,24 @@ namespace Game.Inventory.GUI
             set => _containerId = value;
         }
 
-
         private void Awake()
         {
             _layoutGroup = GetComponent<GridLayoutGroup>();
             _rectTransform = GetComponent<RectTransform>();
-            
-            //todo remove this at a later point
-            CreateSlots(new ContainerSettings{ Identifier = "container1",NumberOfSlots = 24});
         }
 
-        public void CreateSlots(ContainerSettings settings)
+        public void Init(ContainerSettings settings)
+        {
+            _containerId = settings.Identifier;
+            if (_rectTransform == null)
+            {
+                Awake();
+            }
+            CreateSlots(settings);
+            InventoryControllerGUI.Singleton.RegisterContainer(this);
+        }
+
+        private void CreateSlots(ContainerSettings settings)
         {
             var existingInvSlots = GetComponentsInChildren<InventorySlotGUI>();
             
@@ -43,36 +50,8 @@ namespace Game.Inventory.GUI
             var numOfSlotToCreate = settings.NumberOfSlots - existingInvSlots.Length;
             AddExistingSlots();
             SpawnNeededSlots();
-
-            //code about resizing GUI...probably delete it all
-            // var width = _rectTransform.rect.size.x - _layoutGroup.padding.left - _layoutGroup.padding.right;
-            // var height = _rectTransform.rect.size.y -_layoutGroup.padding.top - _layoutGroup.padding.bottom;
-            // // var totalxSpacing = _layoutGroup.spacing.x * _inventorySlots.Count;
-            // // var totalySpacing = _layoutGroup.spacing.y * _inventorySlots.Count;
-            // width -= totalxSpacing;
-            // height -= totalySpacing;
-            // if (width < 0 || height < 0)
-            // {
-            //     Debug.Log("ERROR: Container:" + _containerId+", is smaller than total padding. Please Fix");
-            // }
-            //
-            // var columnCount = Mathf.Abs(width / TargetSlotSize.x);
-            // var rowCount = Mathf.Abs(height / TargetSlotSize.y);
-            // if((columnCount * rowCount) > _inventorySlots.Count)
-            // {
-            //     //desired slots fits into desired cellSize awesome!
-            //     _layoutGroup.cellSize = TargetSlotSize;
-            // }
-            // else
-            // {
-            //     //todo calculate size that fits.
-            //     // Vector2 cellsize = new Vector2(width / settings.NumberOfSlots, height / settings.NumberOfSlots);
-            //     // if (CalculatePercentChange(cellsize.x, _layoutGroup.cellSize.x) > 20f)
-            //     // {
-            //     //     Debug.Log("Cell Size  for: " + _containerId +" ,was changed considrably, please check if it looks awful");
-            //     // }
-            //     // _layoutGroup.cellSize = cellsize;
-            // }
+            //todo Add Enable layoutgroup, then disable again(since it will effect items...)
+            AddItems();
 
             void AddExistingSlots()
             {
@@ -96,16 +75,51 @@ namespace Game.Inventory.GUI
                     }
                 }
             }
+
+            void AddItems()
+            {
+                var slotIndex = 0;
+                foreach (var itemSettings in settings.ItemsToCreate)
+                {
+                    UpdateItemInfo(new SlotIdentifier(settings.Identifier, slotIndex), new ItemInfo(itemSettings.Item));
+                }
+            }
         }
         
+        //What were we going to use this for again??
         public static float CalculatePercentChange(float current, float previous)
         {
             return ((current - previous) / previous)*100f;
         }
 
-        public void UpdateSlot(int slotIndex, ItemInfo itemInfo)
+        /// <summary>
+        /// Will Create GUI Items if the slot being updated doesn't have one.
+        /// </summary>
+        /// <param name="slotId"></param>
+        /// <param name="itemInfo"></param>
+        public void UpdateItemInfo(SlotIdentifier slotId, ItemInfo itemInfo)
         {
-            _inventorySlots[slotIndex].UpdateItem(itemInfo); 
+            GetSlot(slotId.SlotIndex).UpdateItemInfoAndLocation(slotId, itemInfo); 
+        }
+
+        public void MoveItemToSlot(int slotIndex, InventoryItemGUI item)
+        {
+            GetSlot(slotIndex).StoreItem(item);
+        }
+
+        public void ReturnItemToSlot(int slotIndex)
+        {
+            GetSlot(slotIndex).ReturnItemToSlot();
+        }
+
+        public InventoryItemGUI TakeItem(int slotIndex)
+        {
+            return GetSlot(slotIndex).TakeItem();
+        }
+
+        private InventorySlotGUI GetSlot(int slotIndex)
+        {
+            return _inventorySlots[slotIndex];
         }
     }
     

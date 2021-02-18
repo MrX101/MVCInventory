@@ -1,18 +1,23 @@
 ﻿using System.Collections.Generic;
+using Game.Inventory.GUI;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Game.Inventory
 {
-    [CreateAssetMenu(fileName = "WorldItemsManager", menuName = "Create WorldItemsManager", order = 0)]
-    public class WorldItemsManager : ScriptableObject
+    [CreateAssetMenu(fileName = "WorldItemsManager", menuName = "Create ItemsManager", order = 0)]
+    public class ItemsManager : ScriptableObject
     {
-        public static WorldItemsManager Singleton;
-        [SerializeField]private WorldItem _itemPrefab;
+        public static ItemsManager Singleton;
+        [SerializeField]private WorldItem _worldItemPrefab;
+        [SerializeField]private InventoryItemGUI _inventoryItemPrefab;
 
         private List<WorldItem> _worldItems = new List<WorldItem>();
-        private void Awake()
+        
+        private void OnEnable()
         {
             Singleton = this;
+            
         }
 
         public void TakeItem( WorldItem worldItem, Inventory userInventory)
@@ -27,11 +32,16 @@ namespace Game.Inventory
             var worldItem = GetPrefabInstance(position, rotation);
             _worldItems.Add(worldItem);
         }
-    
-    
+
+
+        public InventoryItemGUI CreateGUIItem()
+        {
+            return Instantiate(_inventoryItemPrefab);
+        }
+        
         private WorldItem GetPrefabInstance(Vector3 position, Quaternion rotation)
         {
-            return Instantiate(_itemPrefab, position, rotation);
+            return Instantiate(_worldItemPrefab, position, rotation);
         } 
     
         private void ReturnPrefabInstance(WorldItem worldItem)

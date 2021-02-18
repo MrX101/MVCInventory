@@ -10,37 +10,6 @@ namespace Game.Inventory
         [SerializeField]public List<ContainerSettings> _containersToCreate = new List<ContainerSettings>();
         private Dictionary<string, DataInventoryContainer> _containers = new Dictionary<string, DataInventoryContainer>();
 
-        private void Awake()
-        {
-            Initialize();
-        }
-
-        private void Start()
-        {
-            // for (int i = 0; i < _itemScriptableObjects.Length; i++)
-            // {
-            //     IItem item = _itemScriptableObjects[i];
-            //     StoreItem(ref item);
-            // }
-            //
-            // DebugShowAllItems();
-            // var fromRequest = new ContainerRequest();
-            // fromRequest.ContainerId = "normalInventory";
-            // fromRequest.SlotIndex = 0;
-            // // if (TakeItem(out var item2, request))
-            // // {
-            // //     Debug.Log("Item is: "+ item2.Name);
-            // // }
-            // //DropItem(request);
-            // var toRequest = new ContainerRequest();
-            // toRequest.ContainerId = "normalInventory";
-            // toRequest.SlotIndex = 2;
-            // if (SwapItem(fromRequest, toRequest))
-            // {
-            //     DebugShowAllItems();
-            // }
-        }
-
         public void DebugShowAllItems()
         {
             Debug.Log("Start Of Log");
@@ -61,11 +30,23 @@ namespace Game.Inventory
 
         public void Initialize()
         {
+            //todo add items
             foreach (var settings in _containersToCreate)
             {
                 if (settings.CreateInstance(out var container))
                 {
                     _containers.Add(settings.Identifier, container);
+                }
+
+                foreach (ItemSettings itemToCreate in settings.ItemsToCreate)
+                {
+                    if (itemToCreate.IsValid())
+                    {
+                        if (!StoreItem(ref itemToCreate.Item, out var thing))
+                        {
+                            Debug.Log("Unable to add item");
+                        }
+                    }
                 }
             }
         }
@@ -116,7 +97,7 @@ namespace Game.Inventory
         {
             if (TakeItem(out var item, request))
             {
-                WorldItemsManager.Singleton.CreateWorldItem(item, position, rotation);
+                ItemsManager.Singleton.CreateWorldItem(item, position, rotation);
                 return true;
             }
             return false;
@@ -178,9 +159,9 @@ namespace Game.Inventory
 
         //todo Need to make this tell you where it was stored.
         ///Stores Item in first available slot, Does Not store in Equipment & WeaponWheel Slots.
-        public bool StoreItem(ref IItem item, out List<SlotIdentifier> containerInfo)
+        public bool StoreItem(ref IItem item, out List<SlotIdentifier> resultSlotIds)
         {
-            containerInfo = new List<SlotIdentifier>();
+            resultSlotIds = new List<SlotIdentifier>();
             if (item == null) {  return false; }
             
             foreach (var KVP in _containers)
@@ -193,7 +174,7 @@ namespace Game.Inventory
                 {
                     if (container.StackItemInExistingStacks(ref item, out var info))
                     {
-                        containerInfo.AddRange(info);
+                        resultSlotIds.AddRange(info);
                         return true;
                     }
                 }
@@ -201,7 +182,7 @@ namespace Game.Inventory
                 {
                     if (container.StoreInFirstEmptySlot(ref item, out var info))
                     {
-                        containerInfo.Add(info);
+                        resultSlotIds.Add(info);
                         return true;
                     }
                 }
@@ -215,9 +196,9 @@ namespace Game.Inventory
         /// <param name="item"></param>
         /// <param name="request"></param>
         /// <returns></returns>
-        public bool StoreItem(ref IItem item, SlotIdentifier request, out List<SlotIdentifier> containerInfo)
+        public bool StoreItem(ref IItem item, SlotIdentifier request, out List<SlotIdentifier> resultSlotIds)
         {
-            containerInfo = new List<SlotIdentifier>();
+            resultSlotIds = new List<SlotIdentifier>();
             if (item == null || request == null) { return false; }
 
             if (IsRequestValid(request))
@@ -229,7 +210,7 @@ namespace Game.Inventory
                     
                     if (info != null)
                     {
-                        containerInfo.AddRange(info);
+                        resultSlotIds.AddRange(info);
                     }
                     
                     if (wasSuccessfullyStacked)
@@ -242,7 +223,7 @@ namespace Game.Inventory
                 {
                     if (container.StoreInFirstEmptySlot(ref item, out var info))
                     {
-                        containerInfo.Add(info);
+                        resultSlotIds.Add(info);
                         return true;
                     }
                 }
@@ -276,7 +257,7 @@ namespace Game.Inventory
                     //don't need to check for empty slot in toContainer, since we can still swap slots in that situation.
                     return false;
                 }
-                if (fromRequest.ContainerId == toRequest.ContainerId)
+                if (fromRequest.ContainerId == toRequest.ContainerId && !IsRequestSlotEmpty(toRequest))
                 {
                     _containers[fromRequest.ContainerId].SwapSlots(fromRequest.SlotIndex, toRequest.SlotIndex);
                     return true;

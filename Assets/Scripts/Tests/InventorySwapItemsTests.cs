@@ -27,12 +27,45 @@ namespace Game.Test
             inventory.StoreItem(ref item1, out var info1);
             inventory.StoreItem(ref item2, out var info2);
             //inventory.DebugShowAllItems();
-
             var result = inventory.SwapItem(new SlotIdentifier("1", 0), new SlotIdentifier("1", 1));
 
             var info = inventory.GetContainerInfo("1");
             var invSlot = info.InventorySlots[0];
             if (invSlot.HasItem && invSlot.Item.UniqueId == item2.UniqueId)
+            {
+                correctItemInSlot1 = true;
+            }
+
+            invSlot = info.InventorySlots[1];
+            if (invSlot.HasItem && invSlot.Item.UniqueId == item1.UniqueId)
+            {
+                correctItemInSlot2 = true;
+            }
+
+            Assert.IsTrue(result && correctItemInSlot1 && correctItemInSlot2);
+        }
+        
+        [Test]
+        public void InventorySwapItems_SameContainerEmptySlot_True()
+        {
+            var inventory = new Game.Inventory.Inventory();
+            bool correctItemInSlot1 = false;
+            bool correctItemInSlot2 = false;
+
+            List<ContainerSettings> settingsList = new List<ContainerSettings>
+            {
+                new ContainerSettings {Identifier = "1", Type = ContainerType.Storage, NumberOfSlots = 5},
+            };
+            inventory._containersToCreate = settingsList;
+            inventory.Initialize();
+            IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
+            inventory.StoreItem(ref item1, out var info1);
+            //inventory.DebugShowAllItems();
+            var result = inventory.SwapItem(new SlotIdentifier("1", 0), new SlotIdentifier("1", 1));
+
+            var info = inventory.GetContainerInfo("1");
+            var invSlot = info.InventorySlots[0];
+            if (!invSlot.HasItem)
             {
                 correctItemInSlot1 = true;
             }
