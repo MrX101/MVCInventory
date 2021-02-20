@@ -70,6 +70,17 @@ namespace Game.Inventory
             return true;
         }
         
+        public bool GetItemSlotInfo(int slotIndex,out SlotInfo OutslotInfo)
+        {
+            if (_inventorySlots == null || _inventorySlots.Count == 0)
+            {
+                OutslotInfo = new SlotInfo(null);
+                return false;
+            }
+            OutslotInfo = _inventorySlots[slotIndex].GetSlotInfo();
+            return true;
+        }
+        
         protected void CreateSlots(int numOfSlots)
         {
             for (int i = 0; i < numOfSlots; i++)
@@ -119,13 +130,13 @@ namespace Game.Inventory
         public void TakeItem(int index, out IItem item)
         {
             item =_inventorySlots[index].TakeItem();
+            if (item == null) { return; }
             var count = _itemIdIndex[item.UniqueId].Count;
             _itemIdIndex[item.UniqueId].Remove(index);
             if (_itemIdIndex[item.UniqueId].Count < 1)
             {
                 _itemIdIndex.Remove(item.UniqueId);
             }
-            //todo need to update dictionary
         }
 
 
@@ -199,20 +210,28 @@ namespace Game.Inventory
         
         ///Swap 2 slots both having items of different UniqueID
         ///No Checks
-        public void SwapSlots(int slotIndexOne, int slotIndexTwo)
-        {
-            var temp = _inventorySlots[slotIndexOne];
-            var idOne = _inventorySlots[slotIndexOne].GetUniqueId();
-           _inventorySlots[slotIndexOne] = _inventorySlots[slotIndexTwo];
-            var idTwo = _inventorySlots[slotIndexTwo].GetUniqueId();
-           _inventorySlots[slotIndexTwo] = temp;
-           
-           _itemIdIndex[idOne].Remove(slotIndexOne);
-           _itemIdIndex[idOne].Add(slotIndexTwo);
-           
-           _itemIdIndex[idTwo].Remove(slotIndexTwo);
-           _itemIdIndex[idTwo].Add(slotIndexOne);
-        }
+        // public void SwapSlots(int slotIndexOne, int slotIndexTwo, out ItemInfo slotOne, out ItemInfo slotTwo)
+        // {
+        //     var temp = _inventorySlots[slotIndexOne];
+        //     var idOne = _inventorySlots[slotIndexOne].GetUniqueId();
+        //    _inventorySlots[slotIndexOne] = _inventorySlots[slotIndexTwo];
+        //     var idTwo = _inventorySlots[slotIndexTwo].GetUniqueId();
+        //    _inventorySlots[slotIndexTwo] = temp;
+        //    
+        //    _itemIdIndex[idOne].Remove(slotIndexOne);
+        //    _itemIdIndex[idOne].Add(slotIndexTwo);
+        //
+        //    _itemIdIndex[idTwo].Remove(slotIndexTwo);
+        //    _itemIdIndex[idTwo].Add(slotIndexOne);
+        //
+        //    var item1 = _inventorySlots[slotIndexOne].TakeItem();
+        //    var item2 = _inventorySlots[slotIndexTwo].TakeItem();
+        //    _inventorySlots[slotIndexOne].StoreItem(ref item2);
+        //    _inventorySlots[slotIndexTwo].StoreItem(ref item1);
+        //    
+        //    slotOne = _inventorySlots[slotIndexOne].GetItemInfo();
+        //    slotTwo = _inventorySlots[slotIndexTwo].GetItemInfo();
+        // }
 
         ///Store Item Into EmptySlot
         public virtual void StoreItem(ref IItem itemRef, int slotIndex)

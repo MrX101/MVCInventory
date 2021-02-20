@@ -386,11 +386,12 @@ MonoBehaviour:
         ChanceToSpawn: 100
         minStackSize: 1
         maxStackSize: 1
-      AllowedItemTypes: 
-    - Identifier: Container2
-      NumberOfSlots: 10
-      Type: 0
-      ItemsToCreate: []
+      - ItemClass: 0
+        Item:
+          id: 1
+        ChanceToSpawn: 100
+        minStackSize: 1
+        maxStackSize: 1
       AllowedItemTypes: 
   _containerGUI: {fileID: 509297960}
   references:
@@ -398,10 +399,20 @@ MonoBehaviour:
     00000000:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: TestItem
+        _name: TestItem1
         _sprite: {fileID: 0}
-        _description: bla bla
-        _uniqueId: TestItem
+        _description: First Test Item
+        _uniqueId: 20264
+        _itemType: 0
+        _maxStackSize: 1
+        _currentStackSize: 1
+    00000001:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: TestItem2
+        _sprite: {fileID: 0}
+        _description: Second test item
+        _uniqueId: 2164d
         _itemType: 0
         _maxStackSize: 1
         _currentStackSize: 1
@@ -417,7 +428,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &132696433
 PrefabInstance:
@@ -4606,7 +4617,7 @@ PrefabInstance:
     - target: {fileID: 344456273264817920, guid: e16942c14b3a2704ba34c8a8b1d0f4ec,
         type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 344456273264817920, guid: e16942c14b3a2704ba34c8a8b1d0f4ec,
         type: 3}

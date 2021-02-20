@@ -27,16 +27,16 @@ namespace Game.Test
             inventory.StoreItem(ref item1, out var info1);
             inventory.StoreItem(ref item2, out var info2);
             //inventory.DebugShowAllItems();
-            var result = inventory.SwapItem(new SlotIdentifier("1", 0), new SlotIdentifier("1", 1));
-
-            var info = inventory.GetContainerInfo("1");
-            var invSlot = info.InventorySlots[0];
+            var result = inventory.SwapItem(new SlotIdentifier("1", 0), 
+                new SlotIdentifier("1", 1), out var slotsInfo);
+            
+            var invSlot = slotsInfo[0];
             if (invSlot.HasItem && invSlot.Item.UniqueId == item2.UniqueId)
             {
                 correctItemInSlot1 = true;
             }
 
-            invSlot = info.InventorySlots[1];
+            invSlot = slotsInfo[1];
             if (invSlot.HasItem && invSlot.Item.UniqueId == item1.UniqueId)
             {
                 correctItemInSlot2 = true;
@@ -61,16 +61,16 @@ namespace Game.Test
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             inventory.StoreItem(ref item1, out var info1);
             //inventory.DebugShowAllItems();
-            var result = inventory.SwapItem(new SlotIdentifier("1", 0), new SlotIdentifier("1", 1));
-
-            var info = inventory.GetContainerInfo("1");
-            var invSlot = info.InventorySlots[0];
+            var result = inventory.SwapItem(new SlotIdentifier("1", 0),
+                new SlotIdentifier("1", 1), out var slotsInfo);
+            
+            var invSlot = slotsInfo[0];
             if (!invSlot.HasItem)
             {
                 correctItemInSlot1 = true;
             }
 
-            invSlot = info.InventorySlots[1];
+            invSlot = slotsInfo[1];
             if (invSlot.HasItem && invSlot.Item.UniqueId == item1.UniqueId)
             {
                 correctItemInSlot2 = true;
@@ -100,19 +100,18 @@ namespace Game.Test
             inventory.StoreItem(ref item2, new SlotIdentifier("2", 0), out var info2);
             //inventory.DebugShowAllItems();
 
-            var result = inventory.SwapItem(new SlotIdentifier("1", 0), new SlotIdentifier("2", 0));
+            var result = inventory.SwapItem(new SlotIdentifier("1", 0), 
+                new SlotIdentifier("2", 0), out var slotsInfo);
             
             //inventory.DebugShowAllItems();
             
-            var info = inventory.GetContainerInfo("1");
-            var invSlot = info.InventorySlots[0];
+            var invSlot = slotsInfo[0];
             if (invSlot.HasItem && invSlot.Item.UniqueId == item2.UniqueId)
             {
                 correctItemInContainer1 = true;
             }
             
-            info = inventory.GetContainerInfo("2");
-            invSlot = info.InventorySlots[0];
+            invSlot = slotsInfo[1];
             if (invSlot.HasItem && invSlot.Item.UniqueId == item1.UniqueId)
             {
                 correctItemInContainer2 = true;
@@ -139,19 +138,18 @@ namespace Game.Test
             inventory.StoreItem(ref item1 , out var info1);
             //inventory.DebugShowAllItems();
 
-            var result = inventory.SwapItem(new SlotIdentifier("1", 0), new SlotIdentifier("2", 0));
+            var result = inventory.SwapItem(new SlotIdentifier("1", 0), 
+                new SlotIdentifier("2", 0), out var slotsInfo);
             
             //inventory.DebugShowAllItems();
             
-            var info = inventory.GetContainerInfo("1");
-            var invSlot = info.InventorySlots[0];
+            var invSlot = slotsInfo[0];
             if (!invSlot.HasItem)
             {
                 correctItemInContainer1 = true;
             }
             
-            info = inventory.GetContainerInfo("2");
-            invSlot = info.InventorySlots[0];
+            invSlot = slotsInfo[1];
             if (invSlot.HasItem && invSlot.Item.UniqueId == item1.UniqueId)
             {
                 correctItemInContainer2 = true;
@@ -181,13 +179,15 @@ namespace Game.Test
             inventory.StoreItem(ref item2, new SlotIdentifier("2", 0), out var info2);
             //inventory.DebugShowAllItems();
 
-            var result = inventory.SwapItem(new SlotIdentifier("1", 0), new SlotIdentifier("2", 5));
+            var result = inventory.SwapItem(new SlotIdentifier("1", 0), 
+                new SlotIdentifier("2", 5), out var slotsInfo);
             
             //inventory.DebugShowAllItems();
             
             var info = inventory.GetContainerInfo("1");
             var invSlot = info.InventorySlots[0];
-            if (invSlot.HasItem && invSlot.Item.UniqueId == item1.UniqueId)
+            if (invSlot.SlotId.ContainerId == "1" && invSlot.SlotId.SlotIndex == 0 && 
+                invSlot.HasItem && invSlot.Item.UniqueId == item1.UniqueId)
             {
                 correctItemInContainer1 = true;
             }

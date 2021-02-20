@@ -41,16 +41,22 @@ namespace Game.Inventory
     [Serializable]
     public struct SlotInfo
     {
-        public int SlotIndex;
-        public string ContainerId;
+        public SlotIdentifier SlotId;
         public bool HasItem;
         public ItemInfo Item;
         public bool IsEquipped;
-
+        
         public SlotInfo(DataInventorySlot dataSlot)
         {
-            this.SlotIndex = dataSlot.SlotIndex;
-            this.ContainerId = dataSlot.ContainerId;
+            if (dataSlot == null)
+            {
+                Item = ItemInfo.NULL;
+                HasItem = false;
+                SlotId = null;
+                IsEquipped = false;
+                return;
+            }
+            SlotId = new SlotIdentifier(dataSlot.ContainerId, dataSlot.SlotIndex);
             this.IsEquipped = dataSlot.IsEquipped;
             Item = dataSlot.GetItemInfo();
             HasItem = dataSlot.HasItem();
@@ -60,7 +66,7 @@ namespace Game.Inventory
     [Serializable]
     public struct ItemInfo
     {
-        public static readonly ItemInfo NULL = new ItemInfo{UniqueId = "NULL"};
+        public static readonly ItemInfo NULL = new ItemInfo{UniqueId = "NULL", Name = "NULL"};
         public string Name;
         public string Description;
         public Sprite Sprite;
@@ -78,6 +84,18 @@ namespace Game.Inventory
             this.MaxStackSize = item.MaxStackSize;
             this.CurrentStackSize = item.CurrentStackSize;
             this.ItemType = item.GetItemType();
+        }
+        
+        public static bool operator ==(ItemInfo one, ItemInfo two)
+        {
+            return (one.UniqueId == two.UniqueId && one.Name == two.Name && one.Description == two.Description &&
+                    one.CurrentStackSize == two.CurrentStackSize && one.MaxStackSize == two.MaxStackSize);
+        }
+
+        public static bool operator !=(ItemInfo one, ItemInfo two)
+        {
+            return (one.UniqueId != two.UniqueId || one.Name != two.Name || one.Description != two.Description ||
+                    one.CurrentStackSize != two.CurrentStackSize || one.MaxStackSize != two.MaxStackSize);;
         }
     }
     //todo add equivalent SlotInfo and ItemInfo classes;

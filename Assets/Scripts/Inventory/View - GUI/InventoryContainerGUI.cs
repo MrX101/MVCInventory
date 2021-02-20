@@ -50,15 +50,16 @@ namespace Game.Inventory.GUI
             var numOfSlotToCreate = settings.NumberOfSlots - existingInvSlots.Length;
             AddExistingSlots();
             SpawnNeededSlots();
-            //todo Add Enable layoutgroup, then disable again(since it will effect items...)
+            _layoutGroup.enabled = true; //WARNING GridLayoutGroup Must be disabled in inspector, since it causes all items to have positon/size of 0,0,0 in first frame(for unknown reasons).
+                                         //Which will cause the items to be set to the wrong place when intially created and placed to ItemSlot Locations.
             AddItems();
-
+            
             void AddExistingSlots()
             {
                 for (int i = 0; i < existingInvSlots.Length; i++)
                 {
                     _inventorySlots.Add(existingInvSlots[i]);
-                    existingInvSlots[i].SlotId = new SlotIdentifier(_containerId, 1);
+                    existingInvSlots[i].SlotId = new SlotIdentifier(_containerId, i);
                 }
             }
 
@@ -82,6 +83,7 @@ namespace Game.Inventory.GUI
                 foreach (var itemSettings in settings.ItemsToCreate)
                 {
                     UpdateItemInfo(new SlotIdentifier(settings.Identifier, slotIndex), new ItemInfo(itemSettings.Item));
+                    slotIndex++;
                 }
             }
         }
@@ -100,11 +102,6 @@ namespace Game.Inventory.GUI
         public void UpdateItemInfo(SlotIdentifier slotId, ItemInfo itemInfo)
         {
             GetSlot(slotId.SlotIndex).UpdateItemInfoAndLocation(slotId, itemInfo); 
-        }
-
-        public void MoveItemToSlot(int slotIndex, InventoryItemGUI item)
-        {
-            GetSlot(slotIndex).StoreItem(item);
         }
 
         public void ReturnItemToSlot(int slotIndex)

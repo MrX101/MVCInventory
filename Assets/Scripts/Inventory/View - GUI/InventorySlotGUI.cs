@@ -17,7 +17,7 @@ namespace Game.Inventory.GUI
         {
             _rectTransform = GetComponent<RectTransform>();
         }
-
+        
         public SlotIdentifier SlotId
         {
             get => _slotId;
@@ -26,9 +26,9 @@ namespace Game.Inventory.GUI
 
         public void OnDrop(PointerEventData eventData)
         {
+            Debug.Log("Item Dropped");
             OnItemDroppedEvent?.Invoke(_slotId);
             InventoryControllerGUI.Singleton.ItemDroppedIn(_slotId);
-
         }
 
         /// <summary>
@@ -42,15 +42,12 @@ namespace Game.Inventory.GUI
             {
                 Awake();
             }
-            if (_item == null)
-            {
-                CreateItem();
-            }
             Internal_UpdateItemInfoAndLocation( slotId, itemInfo);
         }
 
         private void CreateItem()
         {
+            Debug.Log("Create Item");
             _item = ItemsManager.Singleton.CreateGUIItem();
             _item.transform.parent = _rectTransform.parent;
             _item.OnBeginDragEvent += InventoryControllerGUI.Singleton.SetAsDragged;
@@ -58,14 +55,22 @@ namespace Game.Inventory.GUI
 
         private void Internal_UpdateItemInfoAndLocation(SlotIdentifier slotId,  ItemInfo itemInfo)
         {
+            if (itemInfo == ItemInfo.NULL)
+            {
+                if (_item != null) { DestroyItem(); }
+                _item = null;
+                OnItemRemovedEvent?.Invoke(_slotId);
+                return;
+            }
+            if (_item == null) { CreateItem(); }
             _item.SetItemInfo(itemInfo);
             _item.PlaceInSlot(_rectTransform, slotId);
         }
 
-        public void StoreItem(InventoryItemGUI item)
+        private void DestroyItem()
         {
-            _item = item;
-            _item.PlaceInSlot(_rectTransform, _slotId);
+            _item.DestroySelf();
+            _item = null;
         }
 
         public void ReturnItemToSlot()

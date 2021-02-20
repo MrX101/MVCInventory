@@ -37,16 +37,12 @@ namespace Game.Inventory.GUI
                 return;
             }
             
-            if (_inventory.SwapItem(_slotItemBeingDragged, toSlotId))
+            if (_inventory.SwapItem(_slotItemBeingDragged, toSlotId, out var responseSlotsInfo))
             {
                 //No other containers besides the item being dragged and the target drop should be changed right?
-                ContainerInfo containerInfo1 = _inventory.GetContainerInfo(toSlotId.ContainerId);
-                MoveItemToSlot(toSlotId, TakeItem(_slotItemBeingDragged));
-                UpdateItemInfo(toSlotId, containerInfo1.InventorySlots[toSlotId.SlotIndex].Item);
-                if (_slotItemBeingDragged.ContainerId != toSlotId.ContainerId)
+                foreach (var slotInfo in responseSlotsInfo)
                 {
-                    ContainerInfo containerInfo2 = _inventory.GetContainerInfo(_slotItemBeingDragged.ContainerId);
-                    UpdateItemInfo(toSlotId, containerInfo2.InventorySlots[toSlotId.SlotIndex].Item);
+                    UpdateItemInfo(slotInfo.SlotId, slotInfo.Item);
                 }
             }
             else
@@ -69,11 +65,6 @@ namespace Game.Inventory.GUI
         private void ReturnItemToSlotPosition(SlotIdentifier slotId)
         {
             GetContainer(slotId).ReturnItemToSlot(slotId.SlotIndex);
-        }
-
-        private void MoveItemToSlot(SlotIdentifier slotId, InventoryItemGUI item)
-        {
-            GetContainer(slotId).MoveItemToSlot(slotId.SlotIndex, item);
         }
 
         private InventoryContainerGUI GetContainer(SlotIdentifier slotId)

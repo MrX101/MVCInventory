@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace Game.Inventory.GUI
 {
-    public class InventoryItemGUI : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler
+    public class InventoryItemGUI : MonoBehaviour,IDropHandler ,IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler
     {
         private SlotIdentifier _slotId;
 
@@ -19,10 +19,11 @@ namespace Game.Inventory.GUI
 
         private bool _isBeingDragged;
         private Vector2 _originalPosition;
-        
+
         public Action<InventoryItemGUI> OnBeginDragEvent;
         public Action<InventoryItemGUI> OnEndDragEvent;
         public Action<InventoryItemGUI> OnClickedEvent;
+        public Action<InventoryItemGUI> OnDropEvent;
 
 
         public SlotIdentifier SlotId
@@ -58,9 +59,6 @@ namespace Game.Inventory.GUI
         {
             if (_isBeingDragged)
             {
-                //_rectTransform.SetParent(_currentParent);
-                //_rectTransform.localPosition  = Vector2.zero;
-                //goto original parent location.
                 _rectTransform.anchoredPosition = _originalPosition;
             }
             _image.raycastTarget = true;
@@ -103,6 +101,19 @@ namespace Game.Inventory.GUI
         {
             _image.sprite = _item.Sprite;
             _stackAmount.SetText(_item.CurrentStackSize.ToString());
+        }
+
+
+        public void DestroySelf()
+        {
+            Debug.Log("Destroy Item");
+            Destroy(this.gameObject);
+        }
+        
+        public void OnDrop(PointerEventData eventData)
+        {
+            OnDropEvent?.Invoke(this);
+            InventoryControllerGUI.Singleton.ItemDroppedIn(_slotId);
         }
     }
 }

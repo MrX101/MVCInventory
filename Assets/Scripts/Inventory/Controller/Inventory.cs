@@ -20,7 +20,7 @@ namespace Game.Inventory
                 {
                     if (slot.HasItem)
                     {
-                        Debug.Log( "Slot Index: " + slot.SlotIndex + " has Item:\n" +
+                        Debug.Log( "Slot Index: " + slot.SlotId.SlotIndex + " has Item:\n" +
                                    "Name: " + slot.Item.Name +" Id: "+slot.Item.UniqueId);
                     }
                 }
@@ -246,8 +246,9 @@ namespace Game.Inventory
 
 
         ///Swaps slots of items, still works if 1 is empty
-        public bool SwapItem(SlotIdentifier fromRequest, SlotIdentifier toRequest)
+        public bool SwapItem(SlotIdentifier fromRequest, SlotIdentifier toRequest, out List<SlotInfo> responseSlotsInfo)
         {
+            responseSlotsInfo = new List<SlotInfo>();
             if (IsRequestValid(fromRequest) && IsRequestValid(toRequest))
             {
                 var fromContainer = _containers[fromRequest.ContainerId];
@@ -255,27 +256,29 @@ namespace Game.Inventory
                 if (IsRequestSlotEmpty(fromRequest))
                 {
                     //don't need to check for empty slot in toContainer, since we can still swap slots in that situation.
+                    responseSlotsInfo = null;
                     return false;
-                }
-                if (fromRequest.ContainerId == toRequest.ContainerId && !IsRequestSlotEmpty(toRequest))
-                {
-                    _containers[fromRequest.ContainerId].SwapSlots(fromRequest.SlotIndex, toRequest.SlotIndex);
-                    return true;
                 }
 
                 if (IsRequestSlotEmpty(toRequest))
                 {
-                    InternalMoveItem(fromRequest, toRequest, ref fromContainer, ref toContainer);
+                    InternalMoveItem(fromRequest, toRequest, ref fromContainer, ref toContainer, out var fromItemInfo, out var toItemInfo);
+                    responseSlotsInfo.Add(fromItemInfo);
+                    responseSlotsInfo.Add(toItemInfo);
                     return true;
                 }
                 else if (!IsRequestSlotEmpty(toRequest) && CanSlotsStack(fromRequest, toRequest))
                 {
-                    InternalStackInSpecificSlot(fromRequest, toRequest, ref fromContainer, ref toContainer);
+                    InternalStackInSpecificSlot(fromRequest, toRequest, ref fromContainer, ref toContainer, out var fromItemInfo, out var toItemInfo);
+                    responseSlotsInfo.Add(fromItemInfo);
+                    responseSlotsInfo.Add(toItemInfo);
                     return true;
                 }
                 else
                 {
-                    InternalSwap(fromRequest, toRequest, ref fromContainer, ref toContainer);
+                    InternalSwap(fromRequest, toRequest, ref fromContainer, ref toContainer, out var fromItemInfo, out var toItemInfo);
+                    responseSlotsInfo.Add(fromItemInfo);
+                    responseSlotsInfo.Add(toItemInfo);
                     return true;
                 }
             }
@@ -304,27 +307,43 @@ namespace Game.Inventory
         }
 
         private void InternalStackInSpecificSlot(SlotIdentifier fromRequest, SlotIdentifier toRequest,
-            ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer)
+            ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer,
+            out SlotInfo FromItemInfo, out SlotInfo ToItemInfo)
         {
             fromContainer.TakeItem(fromRequest.SlotIndex, out var fromItem2);
             toContainer.StackItemInSlot(ref fromItem2, toRequest.SlotIndex);
             fromContainer.StoreItem(ref fromItem2, fromRequest.SlotIndex);
+            fromContainer.GetItemSlotInfo(fromRequest.SlotIndex, out SlotInfo fromItemInfo );
+            toContainer.GetItemSlotInfo(toRequest.SlotIndex, out SlotInfo toItemInfo );
+            FromItemInfo = fromItemInfo;
+            ToItemInfo = toItemInfo;
+            //todo this might cause item in a 3rd slot?
         }
 
         private void InternalSwap(SlotIdentifier fromRequest, SlotIdentifier toRequest,
-            ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer)
+            ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer,
+            out SlotInfo FromItemInfo, out SlotInfo ToItemInfo)
         {
             fromContainer.TakeItem(fromRequest.SlotIndex, out var fromItem);
             toContainer.TakeItem(toRequest.SlotIndex, out var toItem);
             fromContainer.StoreItem(ref toItem, fromRequest.SlotIndex);
             toContainer.StoreItem(ref fromItem, toRequest.SlotIndex);
+            fromContainer.GetItemSlotInfo(fromRequest.SlotIndex, out SlotInfo fromItemInfo );
+            toContainer.GetItemSlotInfo(toRequest.SlotIndex, out SlotInfo toItemInfo );
+            FromItemInfo = fromItemInfo;
+            ToItemInfo = toItemInfo;
         }
         
         private void InternalMoveItem(SlotIdentifier fromRequest, SlotIdentifier toRequest,
-            ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer)
+            ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer,
+            out SlotInfo FromItemInfo, out SlotInfo ToItemInfo)
         {
             fromContainer.TakeItem(fromRequest.SlotIndex, out var fromItem);
             toContainer.StoreItem(ref fromItem, toRequest.SlotIndex);
+            fromContainer.GetItemSlotInfo(fromRequest.SlotIndex, out SlotInfo fromItemInfo );
+            toContainer.GetItemSlotInfo(toRequest.SlotIndex, out SlotInfo toItemInfo );
+            FromItemInfo = fromItemInfo;
+            ToItemInfo = toItemInfo;
         }
 
         private bool CanSlotsStack(SlotIdentifier fromRequest, SlotIdentifier toRequest)
