@@ -28,7 +28,7 @@ namespace Game.Inventory.GUI
         {
             Debug.Log("Item Dropped");
             OnItemDroppedEvent?.Invoke(_slotId);
-            InventoryControllerGUI.Singleton.ItemDroppedIn(_slotId);
+            GlobalInventoryControllerGUI.instance.ItemDroppedIn(_slotId);
         }
 
         /// <summary>
@@ -48,9 +48,9 @@ namespace Game.Inventory.GUI
         private void CreateItem()
         {
             Debug.Log("Create Item");
-            _item = ItemsManager.Singleton.CreateGUIItem();
+            _item = ItemsManager.instance.CreateGUIItem();
             _item.transform.parent = _rectTransform.parent;
-            _item.OnBeginDragEvent += InventoryControllerGUI.Singleton.SetAsDragged;
+            _item.OnBeginDragEvent += GlobalInventoryControllerGUI.instance.SetAsDragged;
         }
 
         private void Internal_UpdateItemInfoAndLocation(SlotIdentifier slotId,  ItemInfo itemInfo)

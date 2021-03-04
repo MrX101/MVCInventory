@@ -33,7 +33,7 @@ namespace Game.Inventory.GUI
                 Awake();
             }
             CreateSlots(settings);
-            InventoryControllerGUI.Singleton.RegisterContainer(this);
+            GlobalInventoryControllerGUI.instance.RegisterContainer(this);
         }
 
         private void CreateSlots(ContainerSettings settings)
@@ -70,7 +70,7 @@ namespace Game.Inventory.GUI
                     for (int i = 0; i < numOfSlotToCreate; i++)
                     {
                         InventorySlotGUI inventorySlot =
-                            Instantiate(InventoryControllerGUI.Singleton.SlotPrefab, parent: this.transform);
+                            Instantiate(GlobalInventoryControllerGUI.instance.SlotPrefab, parent: this.transform);
                         inventorySlot.SlotId = new SlotIdentifier(_containerId, i);
                         _inventorySlots.Add(inventorySlot);
                     }

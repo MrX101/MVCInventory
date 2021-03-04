@@ -1,24 +1,19 @@
 ﻿using System.Collections.Generic;
 using Game.Inventory.GUI;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace Game.Inventory
 {
     [CreateAssetMenu(fileName = "WorldItemsManager", menuName = "Create ItemsManager", order = 0)]
-    public class ItemsManager : ScriptableObject
+    public class ItemsManager : ScriptableSingleton<ItemsManager>
     {
-        public static ItemsManager Singleton;
         [SerializeField]private WorldItem _worldItemPrefab;
         [SerializeField]private InventoryItemGUI _inventoryItemPrefab;
 
         private List<WorldItem> _worldItems = new List<WorldItem>();
         
-        private void OnEnable()
-        {
-            Singleton = this;
-            
-        }
 
         public void TakeItem( WorldItem worldItem, Inventory userInventory)
         {

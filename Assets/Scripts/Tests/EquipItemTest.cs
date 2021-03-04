@@ -22,7 +22,7 @@ namespace Game.Test
                 new ContainerSettings{Identifier = "1", Type = ContainerType.Storage, NumberOfSlots = 5},
                 new ContainerSettings{Identifier = "2", Type = ContainerType.Equiptment, NumberOfSlots = 5}
             };
-            inventory._containersToCreate = settingsList;
+            inventory.ContainerSettings = settingsList;
             inventory.Initialize();
             //inventory.DebugShowAllItems();
             
@@ -61,7 +61,7 @@ namespace Game.Test
                 new ContainerSettings{Identifier = "1", Type = ContainerType.Storage, NumberOfSlots = 5},
                 new ContainerSettings{Identifier = "2", Type = ContainerType.Equiptment, NumberOfSlots = 5}
             };
-            inventory._containersToCreate = settingsList;
+            inventory.ContainerSettings = settingsList;
             inventory.Initialize();
             //inventory.DebugShowAllItems();
             
@@ -102,7 +102,7 @@ namespace Game.Test
                 new ContainerSettings{Identifier = "1", Type = ContainerType.Storage, NumberOfSlots = 5},
                 new ContainerSettings{Identifier = "2", Type = ContainerType.Equiptment, NumberOfSlots = 5}
             };
-            inventory._containersToCreate = settingsList;
+            inventory.ContainerSettings = settingsList;
             inventory.Initialize();
             //inventory.DebugShowAllItems();
             

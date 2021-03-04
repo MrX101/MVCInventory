@@ -20,7 +20,7 @@ namespace Game.Test
             {
                 new ContainerSettings {Identifier = "1", Type = ContainerType.Storage, NumberOfSlots = 5},
             };
-            inventory._containersToCreate = settingsList;
+            inventory.ContainerSettings = settingsList;
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             IItem item2 = new BaseItem {Name = "item2", UniqueId = "item2_Id", MaxStackSize = 10, CurrentStackSize = 1};
@@ -56,7 +56,7 @@ namespace Game.Test
             {
                 new ContainerSettings {Identifier = "1", Type = ContainerType.Storage, NumberOfSlots = 5},
             };
-            inventory._containersToCreate = settingsList;
+            inventory.ContainerSettings = settingsList;
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             inventory.StoreItem(ref item1, out var info1);
@@ -92,7 +92,7 @@ namespace Game.Test
                 new ContainerSettings {Identifier = "1", Type = ContainerType.Storage, NumberOfSlots = 5},
                 new ContainerSettings {Identifier = "2", Type = ContainerType.Storage, NumberOfSlots = 5},
             };
-            inventory._containersToCreate = settingsList;
+            inventory.ContainerSettings = settingsList;
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             IItem item2 = new BaseItem {Name = "item2", UniqueId = "item2_Id", MaxStackSize = 10, CurrentStackSize = 1};
@@ -132,7 +132,7 @@ namespace Game.Test
                 new ContainerSettings {Identifier = "1", Type = ContainerType.Storage, NumberOfSlots = 5},
                 new ContainerSettings {Identifier = "2", Type = ContainerType.Storage, NumberOfSlots = 5},
             };
-            inventory._containersToCreate = settingsList;
+            inventory.ContainerSettings = settingsList;
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             inventory.StoreItem(ref item1 , out var info1);
@@ -171,7 +171,7 @@ namespace Game.Test
                 new ContainerSettings {Identifier = "1", Type = ContainerType.Storage, NumberOfSlots = 3},
                 new ContainerSettings {Identifier = "2", Type = ContainerType.Storage, NumberOfSlots = 3},
             };
-            inventory._containersToCreate = settingsList;
+            inventory.ContainerSettings = settingsList;
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             IItem item2 = new BaseItem {Name = "item2", UniqueId = "item2_Id", MaxStackSize = 10, CurrentStackSize = 1};

@@ -7,8 +7,14 @@ namespace Game.Inventory
     [Serializable]
     public class Inventory 
     {
-        [SerializeField]public List<ContainerSettings> _containersToCreate = new List<ContainerSettings>();
+        private List<ContainerSettings> containerSettings = new List<ContainerSettings>();
         private Dictionary<string, DataInventoryContainer> _containers = new Dictionary<string, DataInventoryContainer>();
+
+        public List<ContainerSettings> ContainerSettings
+        {
+            get => containerSettings;
+            set => containerSettings = value;
+        }
 
         public void DebugShowAllItems()
         {
@@ -31,7 +37,7 @@ namespace Game.Inventory
         public void Initialize()
         {
             //todo add items
-            foreach (var settings in _containersToCreate)
+            foreach (var settings in ContainerSettings)
             {
                 if (settings.CreateInstance(out var container))
                 {
@@ -97,7 +103,7 @@ namespace Game.Inventory
         {
             if (TakeItem(out var item, request))
             {
-                ItemsManager.Singleton.CreateWorldItem(item, position, rotation);
+                ItemsManager.instance.CreateWorldItem(item, position, rotation);
                 return true;
             }
             return false;

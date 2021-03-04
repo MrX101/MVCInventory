@@ -13,3 +13,22 @@ MonoBehaviour:
   m_Name: InventoryControllerGUI
   m_EditorClassIdentifier: 
   SlotPrefab: {fileID: 0}
+  _containerGUI: {fileID: 0}
+  _playerContainersSettings:
+  - Identifier: 
+    NumberOfSlots: 0
+    Type: 0
+    ItemsToCreate: []
+    AllowedItemTypes: 
+  - Identifier: 
+    NumberOfSlots: 0
+    Type: 0
+    ItemsToCreate: []
+    AllowedItemTypes: 
+  - Identifier: 
+    NumberOfSlots: 0
+    Type: 0
+    ItemsToCreate: []
+    AllowedItemTypes: 
+  references:
+    version: 1

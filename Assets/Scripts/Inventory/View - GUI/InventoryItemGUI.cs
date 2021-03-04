@@ -113,7 +113,7 @@ namespace Game.Inventory.GUI
         public void OnDrop(PointerEventData eventData)
         {
             OnDropEvent?.Invoke(this);
-            InventoryControllerGUI.Singleton.ItemDroppedIn(_slotId);
+            GlobalInventoryControllerGUI.instance.ItemDroppedIn(_slotId);
         }
     }
 }

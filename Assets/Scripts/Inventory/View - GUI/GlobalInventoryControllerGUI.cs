@@ -1,28 +1,37 @@
 ﻿using System.Collections.Generic;
+using NaughtyAttributes;
+using UnityEditor;
 using UnityEngine;
 
 namespace Game.Inventory.GUI
 {
-    [CreateAssetMenu(fileName = "InventoryControllerGUI", menuName = "Create InventoryControllerGUI", order = 0)]
-    public class InventoryControllerGUI : ScriptableObject
+    //[CreateAssetMenu(fileName = "GlobalInventoryControllerGUI", menuName = "Create GlobalInventoryControllerGUI", order = 0)]
+    public class GlobalInventoryControllerGUI : ScriptableSingleton<GlobalInventoryControllerGUI>
     {
-        public static InventoryControllerGUI Singleton;
-        private Inventory _inventory;
+        private Inventory _playerInventory;
         [SerializeField]public InventorySlotGUI SlotPrefab;
-
-
+        [SerializeField]private InventoryContainerGUI _containerGUI;
+        [SerializeField]private List<ContainerSettings> _playerContainersSettings = new List<ContainerSettings>();
+        
         private Dictionary<string,InventoryContainerGUI> _containers = new Dictionary<string, InventoryContainerGUI>(); //containerId is key.
         
         private SlotIdentifier _slotItemBeingDragged;
 
-        public void SetInventory(Inventory inventory)
+        private List<string> _playerContainerIds = new List<string>();
+
+        public List<ContainerSettings> PlayerContainersSettings
         {
-            _inventory = inventory;
+            get => _playerContainersSettings;
+            set => _playerContainersSettings = value;
         }
-        
-        private void OnEnable()
+
+        public List<string> PlayerContainerIds => _playerContainerIds;
+
+        public void InitPlayerInventory(Inventory inventory)
         {
-            Singleton = this;
+            _playerInventory = inventory;
+            //todo make this work for all the containers.
+            _containerGUI.Init(inventory.ContainerSettings[0]);
         }
 
         public void SetAsDragged(InventoryItemGUI itemGUI)
@@ -37,7 +46,7 @@ namespace Game.Inventory.GUI
                 return;
             }
             
-            if (_inventory.SwapItem(_slotItemBeingDragged, toSlotId, out var responseSlotsInfo))
+            if (_playerInventory.SwapItem(_slotItemBeingDragged, toSlotId, out var responseSlotsInfo))
             {
                 //No other containers besides the item being dragged and the target drop should be changed right?
                 foreach (var slotInfo in responseSlotsInfo)
@@ -81,6 +90,23 @@ namespace Game.Inventory.GUI
             else
             {
                 Debug.Log("This container was already registered " + container.ContainerId);
+            }
+        }
+
+        private void OnValidate()
+        {
+            foreach (var containerSetting in _playerContainersSettings)
+            {
+                containerSetting.OnValidate();
+            }
+        }
+
+        [Button("SetItems")]
+        private void AddItems()
+        {
+            foreach (var containerSetting in _playerContainersSettings)
+            {
+                containerSetting.SetItems();
             }
         }
     }
