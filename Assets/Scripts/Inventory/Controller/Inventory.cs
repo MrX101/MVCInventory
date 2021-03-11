@@ -48,7 +48,7 @@ namespace Game.Inventory
                 {
                     if (itemToCreate.IsValid())
                     {
-                        if (!StoreItem(ref itemToCreate.Item, out var thing))
+                        if (!StoreItem(ref itemToCreate.Item, settings.Identifier ,out var thing))
                         {
                             Debug.Log("Unable to add item");
                         }
@@ -152,7 +152,7 @@ namespace Game.Inventory
         {
             if (TakeItem(out var item, request))
             {
-                bool result = StoreItem(ref item, out var info);
+                bool result = StoreItemAnywhere(ref item, out var info);
                 if (result)
                 {
                     outInfo = info;
@@ -164,8 +164,8 @@ namespace Game.Inventory
         }
 
         //todo Need to make this tell you where it was stored.
-        ///Stores Item in first available slot, Does Not store in Equipment & WeaponWheel Slots.
-        public bool StoreItem(ref IItem item, out List<SlotIdentifier> resultSlotIds)
+        ///Stores Item in first available slot in any container, Does Not store in Equipment & WeaponWheel Slots.
+        public bool StoreItemAnywhere(ref IItem item, out List<SlotIdentifier> resultSlotIds)
         {
             resultSlotIds = new List<SlotIdentifier>();
             if (item == null) {  return false; }
@@ -193,6 +193,37 @@ namespace Game.Inventory
                     }
                 }
             }
+            return false;
+        }
+        
+        ///Stores Item in first available slot of specified container, Does Not store in Equipment & WeaponWheel Slots.
+        public bool StoreItem(ref IItem item, string containerId , out List<SlotIdentifier> resultSlotIds)
+        {
+            resultSlotIds = new List<SlotIdentifier>();
+            if (item == null) {  return false; }
+            if (!_containers.ContainsKey(containerId)) { return false; }
+            
+            var container = _containers[containerId];
+            if (container is DataEquiptmentContainer) { return false; } //todo separate this functionality into the DataEquiptmentContainer class itself
+            if (container is DataWeaponWheelContainer) { return false; }
+
+            if (container.CanStoreItemType(item.GetItemType()) && container.HasItemsOfUniqueId(item.UniqueId))
+            {
+                if (container.StackItemInExistingStacks(ref item, out var info))
+                {
+                    resultSlotIds.AddRange(info);
+                    return true;
+                }
+            }
+            if (item != null) //In case it was partially stacked, but still has stacks left.
+            {
+                if (container.StoreInFirstEmptySlot(ref item, out var info))
+                {
+                    resultSlotIds.Add(info);
+                    return true;
+                }
+            }
+            
             return false;
         }
         
@@ -292,8 +323,9 @@ namespace Game.Inventory
         }
 
         /// Use to equip Item into an empty Equip Slot;
-        public bool EquipItem(SlotIdentifier fromRequest, SlotIdentifier toRequest)
+        public bool EquipItem(SlotIdentifier fromRequest, SlotIdentifier toRequest, out List<SlotInfo> responseSlotsInfo)
         {
+            responseSlotsInfo = new List<SlotInfo>();
             if (IsRequestValid(fromRequest) && IsRequestValid(toRequest) && !IsRequestSlotEmpty(fromRequest))
             {
                 var fromContainer = _containers[fromRequest.ContainerId];
@@ -306,9 +338,14 @@ namespace Game.Inventory
                 {
                     fromContainer.TakeItem(fromRequest.SlotIndex, out var item);
                     toContainer.StoreItem(ref item, toRequest.SlotIndex);
+                    fromContainer.GetItemSlotInfo(fromRequest.SlotIndex, out var fromItemInfo);
+                    fromContainer.GetItemSlotInfo(toRequest.SlotIndex, out var toItemInfo);
+                    responseSlotsInfo.Add(fromItemInfo);
+                    responseSlotsInfo.Add(toItemInfo);
                     return true;
                 }
             }
+            responseSlotsInfo = null;
             return false;
         }
 

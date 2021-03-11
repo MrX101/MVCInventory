@@ -24,8 +24,8 @@ namespace Game.Test
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             IItem item2 = new BaseItem {Name = "item2", UniqueId = "item2_Id", MaxStackSize = 10, CurrentStackSize = 1};
-            inventory.StoreItem(ref item1, out var info1);
-            inventory.StoreItem(ref item2, out var info2);
+            inventory.StoreItemAnywhere(ref item1, out var info1);
+            inventory.StoreItemAnywhere(ref item2, out var info2);
             //inventory.DebugShowAllItems();
             var result = inventory.SwapItem(new SlotIdentifier("1", 0), 
                 new SlotIdentifier("1", 1), out var slotsInfo);
@@ -59,7 +59,7 @@ namespace Game.Test
             inventory.ContainerSettings = settingsList;
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
-            inventory.StoreItem(ref item1, out var info1);
+            inventory.StoreItemAnywhere(ref item1, out var info1);
             //inventory.DebugShowAllItems();
             var result = inventory.SwapItem(new SlotIdentifier("1", 0),
                 new SlotIdentifier("1", 1), out var slotsInfo);
@@ -96,7 +96,7 @@ namespace Game.Test
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             IItem item2 = new BaseItem {Name = "item2", UniqueId = "item2_Id", MaxStackSize = 10, CurrentStackSize = 1};
-            inventory.StoreItem(ref item1, out var info1);
+            inventory.StoreItemAnywhere(ref item1, out var info1);
             inventory.StoreItem(ref item2, new SlotIdentifier("2", 0), out var info2);
             //inventory.DebugShowAllItems();
 
@@ -135,7 +135,7 @@ namespace Game.Test
             inventory.ContainerSettings = settingsList;
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
-            inventory.StoreItem(ref item1 , out var info1);
+            inventory.StoreItemAnywhere(ref item1 , out var info1);
             //inventory.DebugShowAllItems();
 
             var result = inventory.SwapItem(new SlotIdentifier("1", 0), 
@@ -175,7 +175,7 @@ namespace Game.Test
             inventory.Initialize();
             IItem item1 = new BaseItem {Name = "item1", UniqueId = "item1_Id", MaxStackSize = 10, CurrentStackSize = 1};
             IItem item2 = new BaseItem {Name = "item2", UniqueId = "item2_Id", MaxStackSize = 10, CurrentStackSize = 1};
-            inventory.StoreItem(ref item1, out var info1);
+            inventory.StoreItemAnywhere(ref item1, out var info1);
             inventory.StoreItem(ref item2, new SlotIdentifier("2", 0), out var info2);
             //inventory.DebugShowAllItems();
 

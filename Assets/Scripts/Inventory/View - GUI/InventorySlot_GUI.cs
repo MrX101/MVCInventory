@@ -4,16 +4,16 @@ using UnityEngine.EventSystems;
 
 namespace Game.Inventory.GUI
 {
-    public class InventorySlotGUI : MonoBehaviour, IDropHandler
+    public class InventorySlot_GUI : MonoBehaviour, IDropHandler
     {
-        private InventoryItemGUI _item;
-        private SlotIdentifier _slotId;
-        private Action<SlotIdentifier> OnItemDroppedEvent;
-        private Action<SlotIdentifier> OnItemRemovedEvent;
+        protected InventoryItemGUI _item;
+        protected SlotIdentifier _slotId;
+        protected Action<SlotIdentifier> OnItemDroppedEvent;
+        protected Action<SlotIdentifier> OnItemRemovedEvent;
 
-        private RectTransform _rectTransform;
+        protected RectTransform _rectTransform;
 
-        private void Awake()
+        protected void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
         }
@@ -24,11 +24,19 @@ namespace Game.Inventory.GUI
             set => _slotId = value;
         }
 
+        private void OnEnable()
+        {
+            OnItemDroppedEvent += GlobalInventoryControllerGUI.instance.ItemDroppedIn;
+        }
+
+        private void OnDisable()
+        {
+            OnItemDroppedEvent -= GlobalInventoryControllerGUI.instance.ItemDroppedIn;
+        }
+
         public void OnDrop(PointerEventData eventData)
         {
-            Debug.Log("Item Dropped");
             OnItemDroppedEvent?.Invoke(_slotId);
-            GlobalInventoryControllerGUI.instance.ItemDroppedIn(_slotId);
         }
 
         /// <summary>
@@ -45,15 +53,14 @@ namespace Game.Inventory.GUI
             Internal_UpdateItemInfoAndLocation( slotId, itemInfo);
         }
 
-        private void CreateItem()
+        protected void CreateItem()
         {
-            Debug.Log("Create Item");
             _item = ItemsManager.instance.CreateGUIItem();
             _item.transform.parent = _rectTransform.parent;
             _item.OnBeginDragEvent += GlobalInventoryControllerGUI.instance.SetAsDragged;
         }
 
-        private void Internal_UpdateItemInfoAndLocation(SlotIdentifier slotId,  ItemInfo itemInfo)
+        protected void Internal_UpdateItemInfoAndLocation(SlotIdentifier slotId,  ItemInfo itemInfo)
         {
             if (itemInfo == ItemInfo.NULL)
             {
@@ -67,7 +74,7 @@ namespace Game.Inventory.GUI
             _item.PlaceInSlot(_rectTransform, slotId);
         }
 
-        private void DestroyItem()
+        protected void DestroyItem()
         {
             _item.DestroySelf();
             _item = null;

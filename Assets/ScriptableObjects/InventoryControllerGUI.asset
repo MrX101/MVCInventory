@@ -13,22 +13,48 @@ MonoBehaviour:
   m_Name: InventoryControllerGUI
   m_EditorClassIdentifier: 
   SlotPrefab: {fileID: 0}
-  _containerGUI: {fileID: 0}
   _playerContainersSettings:
-  - Identifier: 
-    NumberOfSlots: 0
+  - Identifier: playerInventory
+    NumberOfSlots: 25
     Type: 0
-    ItemsToCreate: []
+    ItemsToCreate:
+    - ItemClass: 0
+      Item:
+        id: 0
+      ChanceToSpawn: 100
+      minStackSize: 1
+      maxStackSize: 1
     AllowedItemTypes: 
-  - Identifier: 
-    NumberOfSlots: 0
-    Type: 0
-    ItemsToCreate: []
-    AllowedItemTypes: 
-  - Identifier: 
-    NumberOfSlots: 0
-    Type: 0
-    ItemsToCreate: []
+  - Identifier: playerInventory2
+    NumberOfSlots: 5
+    Type: 1
+    ItemsToCreate:
+    - ItemClass: 0
+      Item:
+        id: 1
+      ChanceToSpawn: 100
+      minStackSize: 1
+      maxStackSize: 1
     AllowedItemTypes: 
   references:
     version: 1
+    00000000:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: testItem1
+        _sprite: {fileID: 0}
+        _description: testItem1
+        _uniqueId: 4ad2d
+        _itemType: 0
+        _maxStackSize: 1
+        _currentStackSize: 1
+    00000001:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: testItem2
+        _sprite: {fileID: 0}
+        _description: testItem2
+        _uniqueId: 39b6d
+        _itemType: 0
+        _maxStackSize: 1
+        _currentStackSize: 1

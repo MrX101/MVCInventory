@@ -91,7 +91,7 @@ namespace Game.Inventory
         }
         
 
-        ///True is none left. Otherwise currentstacksize of itemRef will be reduced.
+        ///True if none left. Otherwise currentstacksize of itemRef will be reduced.
         public bool StackItem( ref IItem itemRef)
         {
             _item.CurrentStackSize += itemRef.CurrentStackSize;

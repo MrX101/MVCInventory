@@ -27,8 +27,9 @@ namespace Game.Test
             //inventory.DebugShowAllItems();
             
             IItem item1 = new BaseItem{Name = "item1", UniqueId = "item1_Id", MaxStackSize = 1, CurrentStackSize = 1};
-            var isItemStored = inventory.StoreItem(ref item1, out var info1);
-            var isItemEquipped = inventory.EquipItem(new SlotIdentifier("1",0), new SlotIdentifier("2", 0));
+            var isItemStored = inventory.StoreItemAnywhere(ref item1, out var info1);
+            var isItemEquipped = inventory.EquipItem(new SlotIdentifier("1",0),
+                new SlotIdentifier("2", 0), out var infoList);
             //inventory.DebugShowAllItems();
 
             var info = inventory.GetContainerInfo("2");
@@ -66,8 +67,9 @@ namespace Game.Test
             //inventory.DebugShowAllItems();
             
             IItem item1 = new BaseItem{Name = "item1", UniqueId = "item1_Id", MaxStackSize = 1, CurrentStackSize = 1};
-            var isItemStored = inventory.StoreItem(ref item1, out var outInfo1);
-            var isItemEquipped = inventory.EquipItem(new SlotIdentifier("1",0), new SlotIdentifier("2", 0));
+            var isItemStored = inventory.StoreItemAnywhere(ref item1, out var outInfo1);
+            var isItemEquipped = inventory.EquipItem(new SlotIdentifier("1",0),
+                new SlotIdentifier("2", 0), out var infoList);
             inventory.DebugShowAllItems();
             var isItemUnequipped = inventory.UnEquipItem(new SlotIdentifier("2", 0), out var outInfo2);
             //inventory.DebugShowAllItems();
@@ -107,7 +109,7 @@ namespace Game.Test
             //inventory.DebugShowAllItems();
             
             IItem item1 = new BaseItem{Name = "item1", UniqueId = "item1_Id", MaxStackSize = 1, CurrentStackSize = 1};
-            var isItemStored = inventory.StoreItem(ref item1, out var outContainer);
+            var isItemStored = inventory.StoreItemAnywhere(ref item1, out var outContainer);
             
             //inventory.DebugShowAllItems();
             
@@ -116,7 +118,8 @@ namespace Game.Test
             bool[] isItemUnequippedArray = new bool[numOfTimes];
             for (int i = 0; i < numOfTimes; i++)
             {
-                isItemEquippedArray[i] = inventory.EquipItem(new SlotIdentifier("1",0), new SlotIdentifier("2", 0));
+                isItemEquippedArray[i] = inventory.EquipItem(new SlotIdentifier("1",0), 
+                    new SlotIdentifier("2", 0), out var infoList);
                 isItemUnequippedArray[i] = inventory.UnEquipItem(new SlotIdentifier("2", 0), out var outContainer2);
             }
             

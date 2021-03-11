@@ -6,12 +6,15 @@ namespace Game.Inventory.GUI
 {
     public class InventoryContainerGUI : MonoBehaviour
     {
+        // [Header("Select what type of Container this will be")]
+        // [SerializeField] public GUIContainerSlot _containerSelection;
+        
         private RectTransform _rectTransform;
-        private string _containerId;
+        [SerializeField]private string _containerId;
         private GridLayoutGroup _layoutGroup;
         
         private Vector2 TargetSlotSize = new Vector2(45f,45f);
-        private List<InventorySlotGUI> _inventorySlots = new List<InventorySlotGUI>();
+        private List<InventorySlot_GUI> _inventorySlots = new List<InventorySlot_GUI>();
 
         public string ContainerId
         {
@@ -38,7 +41,7 @@ namespace Game.Inventory.GUI
 
         private void CreateSlots(ContainerSettings settings)
         {
-            var existingInvSlots = GetComponentsInChildren<InventorySlotGUI>();
+            var existingInvSlots = GetComponentsInChildren<InventorySlot_GUI>();
             
             if (existingInvSlots.Length > settings.NumberOfSlots)
             {
@@ -69,7 +72,7 @@ namespace Game.Inventory.GUI
                 {
                     for (int i = 0; i < numOfSlotToCreate; i++)
                     {
-                        InventorySlotGUI inventorySlot =
+                        InventorySlot_GUI inventorySlot =
                             Instantiate(GlobalInventoryControllerGUI.instance.SlotPrefab, parent: this.transform);
                         inventorySlot.SlotId = new SlotIdentifier(_containerId, i);
                         _inventorySlots.Add(inventorySlot);
@@ -114,7 +117,7 @@ namespace Game.Inventory.GUI
             return GetSlot(slotIndex).TakeItem();
         }
 
-        private InventorySlotGUI GetSlot(int slotIndex)
+        private InventorySlot_GUI GetSlot(int slotIndex)
         {
             return _inventorySlots[slotIndex];
         }

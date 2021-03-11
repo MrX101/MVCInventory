@@ -11,6 +11,7 @@ namespace Game.Inventory
     {
         [SerializeField]private WorldItem _worldItemPrefab;
         [SerializeField]private InventoryItemGUI _inventoryItemPrefab;
+        [SerializeField]private InventoryEquipSlot_GUI _inventoryEquipSlotPrefab;
 
         private List<WorldItem> _worldItems = new List<WorldItem>();
         
@@ -18,7 +19,7 @@ namespace Game.Inventory
         public void TakeItem( WorldItem worldItem, Inventory userInventory)
         {
             var item = worldItem.TakeItem();
-            userInventory.StoreItem(ref item, out var info);
+            userInventory.StoreItemAnywhere(ref item, out var info);
             ReturnPrefabInstance(worldItem);
         }
     
@@ -32,6 +33,11 @@ namespace Game.Inventory
         public InventoryItemGUI CreateGUIItem()
         {
             return Instantiate(_inventoryItemPrefab);
+        }
+        
+        public InventoryEquipSlot_GUI CreateEquipSlot()
+        {
+            return Instantiate(_inventoryEquipSlotPrefab);
         }
         
         private WorldItem GetPrefabInstance(Vector3 position, Quaternion rotation)

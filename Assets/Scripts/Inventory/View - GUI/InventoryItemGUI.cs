@@ -11,7 +11,8 @@ namespace Game.Inventory.GUI
         private SlotIdentifier _slotId;
 
         private RectTransform _rectTransform;
-        private CanvasScaler _canvas;
+        private CanvasScaler _canvasScaler;
+        private Canvas _canvas;
         private Image _image;
         private TextMeshProUGUI _stackAmount;
 
@@ -37,22 +38,36 @@ namespace Game.Inventory.GUI
             _rectTransform = GetComponent<RectTransform>();
             _stackAmount = GetComponentInChildren<TextMeshProUGUI>();
             _image = GetComponent<Image>();
+            _canvas = GetComponent<Canvas>();
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            _rectTransform.anchoredPosition += eventData.delta / _canvas.scaleFactor;   
+            _rectTransform.anchoredPosition += eventData.delta / _canvasScaler.scaleFactor;   
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (_canvas == null)
+            if (_canvasScaler == null)
             {
-                _canvas = GetComponentInParent<CanvasScaler>();
+                _canvasScaler = GetComponentInParent<CanvasScaler>();
             }
             _isBeingDragged = true;
             _image.raycastTarget = false;
+            SetToFrontLayer();
             OnBeginDragEvent?.Invoke(this);
+        }
+
+        private void SetToFrontLayer()
+        {
+            _canvas.overrideSorting = true;
+            _canvas.sortingOrder = 100;
+        }
+        
+        private void SetToNormalLayer()
+        {
+            _canvas.overrideSorting = false;
+            _canvas.sortingOrder = 0;
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -62,6 +77,7 @@ namespace Game.Inventory.GUI
                 _rectTransform.anchoredPosition = _originalPosition;
             }
             _image.raycastTarget = true;
+            SetToNormalLayer();
             OnEndDragEvent?.Invoke(this);
         }
 

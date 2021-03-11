@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NaughtyAttributes;
 using UnityEditor;
 using UnityEngine;
@@ -9,14 +10,16 @@ namespace Game.Inventory.GUI
     public class GlobalInventoryControllerGUI : ScriptableSingleton<GlobalInventoryControllerGUI>
     {
         private Inventory _playerInventory;
-        [SerializeField]public InventorySlotGUI SlotPrefab;
-        [SerializeField]private InventoryContainerGUI _containerGUI;
+        [SerializeField]public InventorySlot_GUI SlotPrefab;
+        private List<InventoryContainerGUI> _containerGUIs = new List<InventoryContainerGUI>();
+        
+        //[SerializeField]private List<ContainerSettings_EditorSelection> _playerContainersSettingsGUI = new List<ContainerSettings_EditorSelection>();
         [SerializeField]private List<ContainerSettings> _playerContainersSettings = new List<ContainerSettings>();
         
         private Dictionary<string,InventoryContainerGUI> _containers = new Dictionary<string, InventoryContainerGUI>(); //containerId is key.
         
         private SlotIdentifier _slotItemBeingDragged;
-
+        
         private List<string> _playerContainerIds = new List<string>();
 
         public List<ContainerSettings> PlayerContainersSettings
@@ -24,14 +27,44 @@ namespace Game.Inventory.GUI
             get => _playerContainersSettings;
             set => _playerContainersSettings = value;
         }
-
+        
         public List<string> PlayerContainerIds => _playerContainerIds;
+
+        // [Button("Set ContainerIDs")]
+        // public void SetContainerIDs()
+        // {
+        //     _playerContainersSettings = new List<ContainerSettings>();
+        //     foreach (var containerSettingsGUI in _playerContainersSettingsGUI)
+        //     {
+        //         containerSettingsGUI.SetID();
+        //         _playerContainersSettings.Add(containerSettingsGUI.ContainerSettings);
+        //     }
+        // }
 
         public void InitPlayerInventory(Inventory inventory)
         {
             _playerInventory = inventory;
-            //todo make this work for all the containers.
-            _containerGUI.Init(inventory.ContainerSettings[0]);
+
+            _containerGUIs = FindObjectsOfType<InventoryContainerGUI>().ToList();
+            
+            foreach (InventoryContainerGUI inventoryContainerGUI in _containerGUIs)
+            {
+                //if (ContainerGUIHelper.IsPlayerContainer(inventoryContainerGUI._containerSelection))
+                //{
+                    foreach (var containerSettings in _playerContainersSettings)
+                    {
+                        if (inventoryContainerGUI.ContainerId == containerSettings.Identifier)
+                        {
+                            inventoryContainerGUI.Init(containerSettings);
+                        }
+                    }
+                //}
+                // else
+                // {
+                //     //todo what do we do here?
+                // }
+            }
+            //_containerGUI.Init(inventory.ContainerSettings[0]);
         }
 
         public void SetAsDragged(InventoryItemGUI itemGUI)
@@ -45,7 +78,7 @@ namespace Game.Inventory.GUI
             {
                 return;
             }
-            
+            _playerInventory.DebugShowAllItems();
             if (_playerInventory.SwapItem(_slotItemBeingDragged, toSlotId, out var responseSlotsInfo))
             {
                 //No other containers besides the item being dragged and the target drop should be changed right?
@@ -59,6 +92,27 @@ namespace Game.Inventory.GUI
                 ReturnItemToSlotPosition(_slotItemBeingDragged);
             }
            
+        }
+        
+        public void EquipItemDroppedIn(SlotIdentifier toSlotId)
+        {
+            if (_slotItemBeingDragged == null)
+            {
+                return;
+            }
+            _playerInventory.DebugShowAllItems();
+            if (_playerInventory.EquipItem(_slotItemBeingDragged, toSlotId, out var responseSlotsInfo))
+            {
+                //No other containers besides the item being dragged and the target drop should be changed right?
+                foreach (var slotInfo in responseSlotsInfo)
+                {
+                    UpdateItemInfo(slotInfo.SlotId, slotInfo.Item);
+                }
+            }
+            else
+            {
+                ReturnItemToSlotPosition(_slotItemBeingDragged);
+            }
         }
 
         private void UpdateItemInfo(SlotIdentifier slotId, ItemInfo itemInfo)
