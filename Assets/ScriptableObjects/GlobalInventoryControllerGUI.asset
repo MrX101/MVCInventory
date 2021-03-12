@@ -10,9 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6e45decc5ca941fdb6dac572ebe5b9ab, type: 3}
-  m_Name: InventoryControllerGUI
+  m_Name: GlobalInventoryControllerGUI
   m_EditorClassIdentifier: 
-  SlotPrefab: {fileID: 0}
   _playerContainersSettings:
   - Identifier: playerInventory
     NumberOfSlots: 25
@@ -24,7 +23,7 @@ MonoBehaviour:
       ChanceToSpawn: 100
       minStackSize: 1
       maxStackSize: 1
-    AllowedItemTypes: 
+    AllowedItemTypes: 00000000010000000200000003000000040000000500000006000000
   - Identifier: playerInventory2
     NumberOfSlots: 5
     Type: 1
@@ -35,7 +34,7 @@ MonoBehaviour:
       ChanceToSpawn: 100
       minStackSize: 1
       maxStackSize: 1
-    AllowedItemTypes: 
+    AllowedItemTypes: 000000000100000002000000
   references:
     version: 1
     00000000:
@@ -45,7 +44,7 @@ MonoBehaviour:
         _sprite: {fileID: 0}
         _description: testItem1
         _uniqueId: 4ad2d
-        _itemType: 0
+        _itemType: 2
         _maxStackSize: 1
         _currentStackSize: 1
     00000001:

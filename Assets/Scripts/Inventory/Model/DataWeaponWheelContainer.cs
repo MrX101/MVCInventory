@@ -8,8 +8,9 @@ namespace Game.Inventory
     [Serializable]
     public class DataWeaponWheelContainer : DataInventoryContainer
     {
-        private Action<int> OnPrimaryWeaponChanged;
-        
+        private Action<int> OnSelectedWeaponChanged;
+
+        private int _selectedWeaponIndex = 0;
         
         //protected int MaxNumOfPrimaryWeapons = 1;
         public DataWeaponWheelContainer(ContainerSettings containerSettings) 
@@ -17,20 +18,23 @@ namespace Game.Inventory
         {
             
         }
+        
+        public override void StoreItem(ref IItem itemRef, int slotIndex)
+        {
+            base.StoreItem(ref itemRef, slotIndex);
+            if (slotIndex == _selectedWeaponIndex)
+            {
+                _inventorySlots[slotIndex].SetEquipped();
+            }
+        }
 
         //Used to set which weapon of the equipped slot the character is currently using.
-        public bool SetPrimaryWeapon(int itemIndex)
+        public void SetSelectedWeapon(int itemIndex)
         {
-            for (int i = 0; i < _inventorySlots.Count; i++)
-            {
-                if (i == itemIndex)
-                {
-                    _inventorySlots[itemIndex].SetEquipped();
-                    return true;
-                }
-                _inventorySlots[itemIndex].SetUnEquipped();
-            }
-            return false;
+            if (itemIndex == _selectedWeaponIndex) { return; }
+            _inventorySlots[itemIndex].SetEquipped();
+            _inventorySlots[_selectedWeaponIndex].SetUnEquipped();
+             OnSelectedWeaponChanged.Invoke(itemIndex);
         }
     }
 }

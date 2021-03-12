@@ -12,7 +12,7 @@ namespace Game.Units
         [SerializeField] private Inventory.Inventory _inventory = new Inventory.Inventory();
 
 
-        private void Awake()
+        private void Start()
         {
             //which Inventory do we use the one here or one in InventoryControllerGUI?
             _inventory.ContainerSettings = GlobalInventoryControllerGUI.instance.PlayerContainersSettings;

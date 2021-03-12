@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,12 +17,15 @@ namespace Game.Inventory.GUI
         
         private Vector2 TargetSlotSize = new Vector2(45f,45f);
         private List<InventorySlot_GUI> _inventorySlots = new List<InventorySlot_GUI>();
-
+        private ItemType[] _allowedItemTypes;
+        
         public string ContainerId
         {
             get => _containerId;
             set => _containerId = value;
         }
+
+        public ItemType[] AllowedItemTypes => _allowedItemTypes;
 
         private void Awake()
         {
@@ -28,41 +33,88 @@ namespace Game.Inventory.GUI
             _rectTransform = GetComponent<RectTransform>();
         }
 
-        public void Init(ContainerSettings settings)
+        public void Init(ContainerSettings settings, ContainerInfo containerInfo)
         {
             _containerId = settings.Identifier;
+            _allowedItemTypes = settings.AllowedItemTypes;
             if (_rectTransform == null)
             {
                 Awake();
             }
+            //todo make slots using containerInfo Instead, so it accurately matches inventory?
             CreateSlots(settings);
+            AddItems(containerInfo);
             GlobalInventoryControllerGUI.instance.RegisterContainer(this);
         }
 
         private void CreateSlots(ContainerSettings settings)
         {
-            var existingInvSlots = GetComponentsInChildren<InventorySlot_GUI>();
-            
-            if (existingInvSlots.Length > settings.NumberOfSlots)
+            List<InventorySlot_GUI> existingInvSlots = GetComponentsInChildren<InventorySlot_GUI>().ToList();
+            List<InventoryEquipSlot_GUI> existingInvEquipSlots = new List<InventoryEquipSlot_GUI>();
+            for (int i = 0; i < existingInvSlots.Count; i++)
             {
-                for (int i = settings.NumberOfSlots; i < existingInvSlots.Length; i++)
+                if (existingInvSlots[i] is InventoryEquipSlot_GUI )
                 {
-                    Destroy(existingInvSlots[i].gameObject);
+                    existingInvEquipSlots.Add(existingInvSlots[i] as InventoryEquipSlot_GUI);
+                    existingInvSlots.RemoveAt(i);
                 }
             }
-            var numOfSlotToCreate = settings.NumberOfSlots - existingInvSlots.Length;
-            AddExistingSlots();
-            SpawnNeededSlots();
-            _layoutGroup.enabled = true; //WARNING GridLayoutGroup Must be disabled in inspector, since it causes all items to have positon/size of 0,0,0 in first frame(for unknown reasons).
-                                         //Which will cause the items to be set to the wrong place when intially created and placed to ItemSlot Locations.
-            AddItems();
+            InventorySlot_GUI[] slots;
             
-            void AddExistingSlots()
+            RemoveWrongSlotType();
+
+            RemoveExtraSlots();
+
+            var numOfSlotToCreate = settings.NumberOfSlots - slots.Length;
+
+            AddCurrentSlotsToList();
+            
+            SpawnNeededSlots();
+
+            _layoutGroup.enabled = true; 
+            //WARNING GridLayoutGroup Must be disabled in inspector,
+            //since it causes all items to have positon/size of 0,0,0 in first frame(for unknown reasons).
+            //Which will cause the items to be set to the wrong place when initially
+            //created and placed to ItemSlot Locations.
+            
+            void RemoveWrongSlotType()
             {
-                for (int i = 0; i < existingInvSlots.Length; i++)
+                if (settings.Type == ContainerType.Storage)
                 {
-                    _inventorySlots.Add(existingInvSlots[i]);
-                    existingInvSlots[i].SlotId = new SlotIdentifier(_containerId, i);
+                    slots = existingInvSlots.ToArray();
+                    foreach (var equipSlot in existingInvEquipSlots)
+                    {
+                        Destroy(equipSlot.gameObject);
+                    }
+                }
+                else
+                {
+                    slots = existingInvEquipSlots.ToArray();
+                    foreach (var invSlots in existingInvSlots)
+                    {
+                        Destroy(invSlots.gameObject);
+                    }
+                }
+            }
+
+            void RemoveExtraSlots()
+            {
+                if (slots.Length > settings.NumberOfSlots)
+                {
+                    for (int i = settings.NumberOfSlots; i < slots.Length; i++)
+                    {
+                        Destroy(slots[i].gameObject);
+                    }
+                    Array.Resize(ref slots, settings.NumberOfSlots);
+                }
+            }
+
+            void AddCurrentSlotsToList()
+            {
+                for (int i = 0; i < slots.Length; i++)
+                {
+                    _inventorySlots.Add(slots[i]);
+                    slots[i].SlotId = new SlotIdentifier(_containerId, i);
                 }
             }
 
@@ -72,23 +124,36 @@ namespace Game.Inventory.GUI
                 {
                     for (int i = 0; i < numOfSlotToCreate; i++)
                     {
-                        InventorySlot_GUI inventorySlot =
-                            Instantiate(GlobalInventoryControllerGUI.instance.SlotPrefab, parent: this.transform);
-                        inventorySlot.SlotId = new SlotIdentifier(_containerId, i);
+                        var inventorySlot = settings.Type == ContainerType.Storage ? ItemsManager.instance.GetInventorySlot() : ItemsManager.instance.GetEquipSlot();
+                        inventorySlot.transform.SetParent(transform);
+                        inventorySlot.SlotId = new SlotIdentifier(_containerId, _inventorySlots.Count);
                         _inventorySlots.Add(inventorySlot);
                     }
                 }
             }
+        }
 
-            void AddItems()
+        private void AddItems( ContainerInfo containerInfo)
+        {
+            foreach (var slotInfo in containerInfo.InventorySlots)
             {
-                var slotIndex = 0;
-                foreach (var itemSettings in settings.ItemsToCreate)
+                if (slotInfo.HasItem)
                 {
-                    UpdateItemInfo(new SlotIdentifier(settings.Identifier, slotIndex), new ItemInfo(itemSettings.Item));
-                    slotIndex++;
+                    UpdateItemInfo(slotInfo.SlotId, slotInfo.Item);
                 }
             }
+        }
+
+        public bool IsAllowedItemType(ItemType itemType)
+        {
+            for (int i = 0; i < _allowedItemTypes.Length; i++)
+            {
+                if (_allowedItemTypes[i] == itemType)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         
         //What were we going to use this for again??

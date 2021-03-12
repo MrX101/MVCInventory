@@ -122,7 +122,6 @@ namespace Game.Inventory.GUI
 
         public void DestroySelf()
         {
-            Debug.Log("Destroy Item");
             Destroy(this.gameObject);
         }
         

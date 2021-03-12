@@ -55,7 +55,7 @@ namespace Game.Inventory.GUI
 
         protected void CreateItem()
         {
-            _item = ItemsManager.instance.CreateGUIItem();
+            _item = ItemsManager.instance.GetGUIItem();
             _item.transform.parent = _rectTransform.parent;
             _item.OnBeginDragEvent += GlobalInventoryControllerGUI.instance.SetAsDragged;
         }

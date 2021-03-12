@@ -10,7 +10,9 @@ namespace Game.Inventory
     public class ItemsManager : ScriptableSingleton<ItemsManager>
     {
         [SerializeField]private WorldItem _worldItemPrefab;
+        
         [SerializeField]private InventoryItemGUI _inventoryItemPrefab;
+        [SerializeField]private InventorySlot_GUI _inventorySlotPrefab;
         [SerializeField]private InventoryEquipSlot_GUI _inventoryEquipSlotPrefab;
 
         private List<WorldItem> _worldItems = new List<WorldItem>();
@@ -20,33 +22,38 @@ namespace Game.Inventory
         {
             var item = worldItem.TakeItem();
             userInventory.StoreItemAnywhere(ref item, out var info);
-            ReturnPrefabInstance(worldItem);
+            ReturnWorldItem(worldItem);
         }
     
         public void CreateWorldItem(IItem item, Vector3 position, Quaternion rotation)
         {
-            var worldItem = GetPrefabInstance(position, rotation);
+            var worldItem = GetWorldItem(position, rotation);
             _worldItems.Add(worldItem);
         }
 
-
-        public InventoryItemGUI CreateGUIItem()
+        public InventoryItemGUI GetGUIItem()
         {
             return Instantiate(_inventoryItemPrefab);
         }
-        
-        public InventoryEquipSlot_GUI CreateEquipSlot()
+
+        public InventorySlot_GUI GetInventorySlot()
+        {
+            return Instantiate(_inventorySlotPrefab);
+        }
+
+        public InventoryEquipSlot_GUI GetEquipSlot()
         {
             return Instantiate(_inventoryEquipSlotPrefab);
         }
         
-        private WorldItem GetPrefabInstance(Vector3 position, Quaternion rotation)
+        private WorldItem GetWorldItem(Vector3 position, Quaternion rotation)
         {
             return Instantiate(_worldItemPrefab, position, rotation);
         } 
     
-        private void ReturnPrefabInstance(WorldItem worldItem)
+        private void ReturnWorldItem(WorldItem worldItem)
         {
+            Destroy(worldItem.gameObject);
             //todo return to pool
         }
     }

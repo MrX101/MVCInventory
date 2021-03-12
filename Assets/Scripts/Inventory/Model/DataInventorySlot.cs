@@ -42,8 +42,8 @@ namespace Game.Inventory
         public void SetEquipped()
         {
             if (IsEquipped) { return; }
-            _isEquipped = false;
-            OnItemEquippedStatus?.Invoke(IsEquipped, _item);
+            _isEquipped = true;
+            OnItemEquippedStatus?.Invoke(_isEquipped, _item);
         }
         
 
@@ -58,8 +58,8 @@ namespace Game.Inventory
         public void SetUnEquipped()
         {
             if (!IsEquipped) { return; }
-            _isEquipped = true;
-            OnItemEquippedStatus?.Invoke(IsEquipped, _item);
+            _isEquipped = false;
+            OnItemEquippedStatus?.Invoke(_isEquipped, _item);
         }
         
         ///Make Duplicate First if needed for storing the stacks.

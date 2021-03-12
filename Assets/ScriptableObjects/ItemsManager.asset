@@ -16,3 +16,7 @@ MonoBehaviour:
     type: 3}
   _inventoryItemPrefab: {fileID: 6539912704127328978, guid: 56071991c0c50f5448ab9e2946b357ab,
     type: 3}
+  _inventorySlotPrefab: {fileID: 7021925904703122453, guid: d429df3a83e812e4587193e02810230f,
+    type: 3}
+  _inventoryEquipSlotPrefab: {fileID: 480749061619503354, guid: 045e4950cb6fc7244bc5ff572a6e3fcc,
+    type: 3}

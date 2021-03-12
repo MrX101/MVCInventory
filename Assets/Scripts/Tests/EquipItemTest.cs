@@ -70,7 +70,7 @@ namespace Game.Test
             var isItemStored = inventory.StoreItemAnywhere(ref item1, out var outInfo1);
             var isItemEquipped = inventory.EquipItem(new SlotIdentifier("1",0),
                 new SlotIdentifier("2", 0), out var infoList);
-            inventory.DebugShowAllItems();
+            //inventory.DebugShowAllItems();
             var isItemUnequipped = inventory.UnEquipItem(new SlotIdentifier("2", 0), out var outInfo2);
             //inventory.DebugShowAllItems();
 

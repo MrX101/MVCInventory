@@ -10,17 +10,17 @@ namespace Game.Inventory.GUI
     public class GlobalInventoryControllerGUI : ScriptableSingleton<GlobalInventoryControllerGUI>
     {
         private Inventory _playerInventory;
-        [SerializeField]public InventorySlot_GUI SlotPrefab;
         private List<InventoryContainerGUI> _containerGUIs = new List<InventoryContainerGUI>();
         
         //[SerializeField]private List<ContainerSettings_EditorSelection> _playerContainersSettingsGUI = new List<ContainerSettings_EditorSelection>();
-        [SerializeField]private List<ContainerSettings> _playerContainersSettings = new List<ContainerSettings>();
+        [SerializeField] private List<ContainerSettings> _playerContainersSettings;
+        
         
         private Dictionary<string,InventoryContainerGUI> _containers = new Dictionary<string, InventoryContainerGUI>(); //containerId is key.
         
         private SlotIdentifier _slotItemBeingDragged;
         
-        private List<string> _playerContainerIds = new List<string>();
+        //private List<string> _playerContainerIds = new List<string>();
 
         public List<ContainerSettings> PlayerContainersSettings
         {
@@ -28,7 +28,7 @@ namespace Game.Inventory.GUI
             set => _playerContainersSettings = value;
         }
         
-        public List<string> PlayerContainerIds => _playerContainerIds;
+        //public List<string> PlayerContainerIds => _playerContainerIds;
 
         // [Button("Set ContainerIDs")]
         // public void SetContainerIDs()
@@ -44,7 +44,6 @@ namespace Game.Inventory.GUI
         public void InitPlayerInventory(Inventory inventory)
         {
             _playerInventory = inventory;
-
             _containerGUIs = FindObjectsOfType<InventoryContainerGUI>().ToList();
             
             foreach (InventoryContainerGUI inventoryContainerGUI in _containerGUIs)
@@ -55,7 +54,7 @@ namespace Game.Inventory.GUI
                     {
                         if (inventoryContainerGUI.ContainerId == containerSettings.Identifier)
                         {
-                            inventoryContainerGUI.Init(containerSettings);
+                            inventoryContainerGUI.Init(containerSettings, _playerInventory.GetContainerInfo(containerSettings.Identifier));
                         }
                     }
                 //}
@@ -78,7 +77,7 @@ namespace Game.Inventory.GUI
             {
                 return;
             }
-            _playerInventory.DebugShowAllItems();
+            //_playerInventory.DebugShowAllItems();
             if (_playerInventory.SwapItem(_slotItemBeingDragged, toSlotId, out var responseSlotsInfo))
             {
                 //No other containers besides the item being dragged and the target drop should be changed right?
@@ -100,7 +99,7 @@ namespace Game.Inventory.GUI
             {
                 return;
             }
-            _playerInventory.DebugShowAllItems();
+            //_playerInventory.DebugShowAllItems();
             if (_playerInventory.EquipItem(_slotItemBeingDragged, toSlotId, out var responseSlotsInfo))
             {
                 //No other containers besides the item being dragged and the target drop should be changed right?

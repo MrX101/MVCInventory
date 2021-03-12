@@ -18,7 +18,7 @@ namespace Game.Inventory
 
         public void DebugShowAllItems()
         {
-            Debug.Log("Start Of Log");
+            Debug.Log("Start Of Inventory Log");
             foreach (var containerInfo in GetAllContainersInfo())
             {
                 Debug.Log("Container: "+ containerInfo.Id + " has "+containerInfo.InventorySlots.Length + " slots");
@@ -26,12 +26,12 @@ namespace Game.Inventory
                 {
                     if (slot.HasItem)
                     {
-                        Debug.Log( "Slot Index: " + slot.SlotId.SlotIndex + " has Item:\n" +
+                        Debug.Log( "Slot Index: " + slot.SlotId.SlotIndex + " has Item: " +
                                    "Name: " + slot.Item.Name +" Id: "+slot.Item.UniqueId);
                     }
                 }
             }
-            Debug.Log("End Of Log");
+            Debug.Log("End Of Inventory Log");
         }
 
         public void Initialize()
@@ -48,7 +48,7 @@ namespace Game.Inventory
                 {
                     if (itemToCreate.IsValid())
                     {
-                        if (!StoreItem(ref itemToCreate.Item, settings.Identifier ,out var thing))
+                        if (!StoreItem(ref itemToCreate.Item, settings.Identifier ,out var slotIds))
                         {
                             Debug.Log("Unable to add item");
                         }
@@ -114,13 +114,14 @@ namespace Game.Inventory
             return new ContainerInfo(_containers[containerId]);
         }
 
-        public bool SetPrimary(SlotIdentifier request)
+        public bool SetSelectedItem(SlotIdentifier request)
         {
             if (IsRequestValid(request) && !IsRequestSlotEmpty(request))
             {
                 if (_containers[request.ContainerId] is DataWeaponWheelContainer container)
                 {
-                    return container.SetPrimaryWeapon(request.SlotIndex);
+                    container.SetSelectedWeapon(request.SlotIndex);
+                    return true;
                 }
             }
             return false;
@@ -163,8 +164,7 @@ namespace Game.Inventory
             return false;
         }
 
-        //todo Need to make this tell you where it was stored.
-        ///Stores Item in first available slot in any container, Does Not store in Equipment & WeaponWheel Slots.
+        ///Stores Item in first available slot in any container
         public bool StoreItemAnywhere(ref IItem item, out List<SlotIdentifier> resultSlotIds)
         {
             resultSlotIds = new List<SlotIdentifier>();
@@ -172,11 +172,9 @@ namespace Game.Inventory
             
             foreach (var KVP in _containers)
             {
-                if (KVP.Value is DataEquiptmentContainer) { continue; }
-                if (KVP.Value is DataWeaponWheelContainer) { continue; }
                 var container = KVP.Value;
-                
-                if (container.CanStoreItemType(item.GetItemType()) && container.HasItemsOfUniqueId(item.UniqueId))
+                if (!container.CanStoreItemType(item.GetItemType())) { continue; }
+                if (container.HasItemsOfUniqueId(item.UniqueId))
                 {
                     if (container.StackItemInExistingStacks(ref item, out var info))
                     {
@@ -196,7 +194,7 @@ namespace Game.Inventory
             return false;
         }
         
-        ///Stores Item in first available slot of specified container, Does Not store in Equipment & WeaponWheel Slots.
+        ///Stores Item in first available slot of specified container
         public bool StoreItem(ref IItem item, string containerId , out List<SlotIdentifier> resultSlotIds)
         {
             resultSlotIds = new List<SlotIdentifier>();
@@ -204,10 +202,10 @@ namespace Game.Inventory
             if (!_containers.ContainsKey(containerId)) { return false; }
             
             var container = _containers[containerId];
-            if (container is DataEquiptmentContainer) { return false; } //todo separate this functionality into the DataEquiptmentContainer class itself
-            if (container is DataWeaponWheelContainer) { return false; }
 
-            if (container.CanStoreItemType(item.GetItemType()) && container.HasItemsOfUniqueId(item.UniqueId))
+            if (!container.CanStoreItemType(item.GetItemType())) { return false; }
+            
+            if (container.HasItemsOfUniqueId(item.UniqueId))
             {
                 if (container.StackItemInExistingStacks(ref item, out var info))
                 {
@@ -238,33 +236,34 @@ namespace Game.Inventory
             resultSlotIds = new List<SlotIdentifier>();
             if (item == null || request == null) { return false; }
 
-            if (IsRequestValid(request))
-            {
-                var container = _containers[request.ContainerId];
-                if (container.CanStoreItemType(item.GetItemType()) && container.HasItemsOfUniqueId(item.UniqueId))
-                {
-                    var wasSuccessfullyStacked = container.StackItemInExistingStacks(ref item, out var info);
-                    
-                    if (info != null)
-                    {
-                        resultSlotIds.AddRange(info);
-                    }
-                    
-                    if (wasSuccessfullyStacked)
-                    {
-                        return true;
-                    }
+            if (!IsRequestValid(request)) { return false; }
 
-                }
-                if (item != null) //In case it was partially stacked, but still has stacks left.
+            var container = _containers[request.ContainerId];
+            if (!container.CanStoreItemType(item.GetItemType())) { return false; }
+            if (container.HasItemsOfUniqueId(item.UniqueId))
+            {
+                var wasSuccessfullyStacked = container.StackItemInExistingStacks(ref item, out var info);
+                
+                if (info != null)
                 {
-                    if (container.StoreInFirstEmptySlot(ref item, out var info))
-                    {
-                        resultSlotIds.Add(info);
-                        return true;
-                    }
+                    resultSlotIds.AddRange(info);
+                }
+                
+                if (wasSuccessfullyStacked)
+                {
+                    return true;
+                }
+
+            }
+            if (item != null) //In case it was partially stacked, but still has stacks left.
+            {
+                if (container.StoreInFirstEmptySlot(ref item, out var info))
+                {
+                    resultSlotIds.Add(info);
+                    return true;
                 }
             }
+            
             return false;
         }
 
@@ -322,7 +321,6 @@ namespace Game.Inventory
             return false;
         }
 
-        /// Use to equip Item into an empty Equip Slot;
         public bool EquipItem(SlotIdentifier fromRequest, SlotIdentifier toRequest, out List<SlotInfo> responseSlotsInfo)
         {
             responseSlotsInfo = new List<SlotInfo>();
@@ -330,7 +328,7 @@ namespace Game.Inventory
             {
                 var fromContainer = _containers[fromRequest.ContainerId];
                 var toContainer = _containers[toRequest.ContainerId];
-                var fromItemType = fromContainer.GetItemTypeOfItemInSlot(toRequest.SlotIndex);
+                var fromItemType = fromContainer.GetItemTypeOfItemInSlot(fromRequest.SlotIndex);
                 
                 if (toContainer.SlotIsEmpty(toRequest.SlotIndex) 
                     && (toContainer is DataEquiptmentContainer || toContainer is DataWeaponWheelContainer)

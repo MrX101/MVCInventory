@@ -28,7 +28,7 @@ namespace Game.Inventory
         {
             yield return null;
             //todo replace with return to pool
-            Destroy(this);
+            Destroy(this.gameObject);
         }
     }
 }
