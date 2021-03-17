@@ -17,7 +17,7 @@ namespace Game.Inventory
         IItem CreateEmptyDuplicate();
     }
     
-    [Serializable]
+    
     public enum ItemType
     {
         Gun,

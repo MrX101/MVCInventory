@@ -1,69 +1,87 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using NaughtyAttributes;
-using UnityEditor;
 using UnityEngine;
 
 namespace Game.Inventory.GUI
 {
-    //[CreateAssetMenu(fileName = "GlobalInventoryControllerGUI", menuName = "Create GlobalInventoryControllerGUI", order = 0)]
-    public class GlobalInventoryControllerGUI : ScriptableSingleton<GlobalInventoryControllerGUI>
+    [CreateAssetMenu(fileName = "GlobalInventoryControllerGUI", menuName = "Create GlobalInventoryControllerGUI", order = 0)]
+    public class GlobalInventoryControllerGUI : ScriptableObject
     {
+        private static GlobalInventoryControllerGUI _instance;
+
+        public static GlobalInventoryControllerGUI Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    var resourcesFound = Resources.FindObjectsOfTypeAll<GlobalInventoryControllerGUI>();
+                    if (resourcesFound.Length == 0)
+                    {
+                        Debug.Log(nameof(GlobalInventoryControllerGUI)+" Not Found");
+                    }
+                    else if (resourcesFound.Length > 1)
+                    {
+                        Debug.Log("Too many "+ nameof(GlobalInventoryControllerGUI)+" Found");
+                    }
+                    else
+                    {
+                        _instance = resourcesFound[0];
+                    }
+                }
+                return _instance;
+            }
+        }
+
         private Inventory _playerInventory;
+
         private List<InventoryContainerGUI> _containerGUIs = new List<InventoryContainerGUI>();
-        
-        //[SerializeField]private List<ContainerSettings_EditorSelection> _playerContainersSettingsGUI = new List<ContainerSettings_EditorSelection>();
         [SerializeField] private List<ContainerSettings> _playerContainersSettings;
-        
-        
         private Dictionary<string,InventoryContainerGUI> _containers = new Dictionary<string, InventoryContainerGUI>(); //containerId is key.
-        
         private SlotIdentifier _slotItemBeingDragged;
         
-        //private List<string> _playerContainerIds = new List<string>();
+        [SerializeField]private InventoryItemGUI _inventoryItemPrefab;
+        [SerializeField]private GameObject _inventorySlotPrefab;
+        [SerializeField]private GameObject _inventoryEquipSlotPrefab;
+
+        public InventoryItemGUI GetGUIItem()
+        {
+            return Instantiate(_inventoryItemPrefab);
+        }
+
+        public InventorySlot_GUI GetInventorySlot()
+        {
+            return Instantiate(_inventorySlotPrefab).GetComponentInChildren<InventorySlot_GUI>();
+        }
+
+        public InventoryEquipSlot_GUI GetEquipSlot()
+        {
+            return Instantiate(_inventoryEquipSlotPrefab).GetComponentInChildren<InventoryEquipSlot_GUI>();
+        }
 
         public List<ContainerSettings> PlayerContainersSettings
         {
             get => _playerContainersSettings;
             set => _playerContainersSettings = value;
         }
-        
-        //public List<string> PlayerContainerIds => _playerContainerIds;
-
-        // [Button("Set ContainerIDs")]
-        // public void SetContainerIDs()
-        // {
-        //     _playerContainersSettings = new List<ContainerSettings>();
-        //     foreach (var containerSettingsGUI in _playerContainersSettingsGUI)
-        //     {
-        //         containerSettingsGUI.SetID();
-        //         _playerContainersSettings.Add(containerSettingsGUI.ContainerSettings);
-        //     }
-        // }
 
         public void InitPlayerInventory(Inventory inventory)
         {
             _playerInventory = inventory;
             _containerGUIs = FindObjectsOfType<InventoryContainerGUI>().ToList();
-            
+
             foreach (InventoryContainerGUI inventoryContainerGUI in _containerGUIs)
             {
-                //if (ContainerGUIHelper.IsPlayerContainer(inventoryContainerGUI._containerSelection))
-                //{
-                    foreach (var containerSettings in _playerContainersSettings)
+                foreach (var containerSettings in _playerContainersSettings)
+                {
+                    if (inventoryContainerGUI.ContainerId == containerSettings.Identifier)
                     {
-                        if (inventoryContainerGUI.ContainerId == containerSettings.Identifier)
-                        {
-                            inventoryContainerGUI.Init(containerSettings, _playerInventory.GetContainerInfo(containerSettings.Identifier));
-                        }
+                        inventoryContainerGUI.Init(containerSettings,
+                            _playerInventory.GetContainerInfo(containerSettings.Identifier));
                     }
-                //}
-                // else
-                // {
-                //     //todo what do we do here?
-                // }
+                }
             }
-            //_containerGUI.Init(inventory.ContainerSettings[0]);
         }
 
         public void SetAsDragged(InventoryItemGUI itemGUI)

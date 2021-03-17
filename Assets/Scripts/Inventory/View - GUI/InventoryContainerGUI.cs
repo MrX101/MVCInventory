@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,8 +14,7 @@ namespace Game.Inventory.GUI
         
         private RectTransform _rectTransform;
         [SerializeField]private string _containerId;
-        private GridLayoutGroup _layoutGroup;
-        
+
         private Vector2 TargetSlotSize = new Vector2(45f,45f);
         private List<InventorySlot_GUI> _inventorySlots = new List<InventorySlot_GUI>();
         private ItemType[] _allowedItemTypes;
@@ -29,7 +29,6 @@ namespace Game.Inventory.GUI
 
         private void Awake()
         {
-            _layoutGroup = GetComponent<GridLayoutGroup>();
             _rectTransform = GetComponent<RectTransform>();
         }
 
@@ -43,10 +42,22 @@ namespace Game.Inventory.GUI
             }
             //todo make slots using containerInfo Instead, so it accurately matches inventory?
             CreateSlots(settings);
-            AddItems(containerInfo);
-            GlobalInventoryControllerGUI.instance.RegisterContainer(this);
+            StartCoroutine(AddItems_CR(containerInfo));
+            
+            GlobalInventoryControllerGUI.Instance.RegisterContainer(this);
         }
-
+        
+        //!!WARNING!!
+        //This exists because the layoutGroup component does not move items until next frame, after being enabled.
+        //Thus delaying the item spawning by 1 frame, ensures the item have the correct spawn position/original position.
+        //Also it causes all items to have positon/size of 0,0,0 in first frame(for unknown reasons).
+        //If it was enabled in the editor when the game began.
+        IEnumerator AddItems_CR( ContainerInfo containerInfo)
+        {
+            yield return null;
+            AddItems(containerInfo);
+        }
+        
         private void CreateSlots(ContainerSettings settings)
         {
             List<InventorySlot_GUI> existingInvSlots = GetComponentsInChildren<InventorySlot_GUI>().ToList();
@@ -71,12 +82,6 @@ namespace Game.Inventory.GUI
             
             SpawnNeededSlots();
 
-            _layoutGroup.enabled = true; 
-            //WARNING GridLayoutGroup Must be disabled in inspector,
-            //since it causes all items to have positon/size of 0,0,0 in first frame(for unknown reasons).
-            //Which will cause the items to be set to the wrong place when initially
-            //created and placed to ItemSlot Locations.
-            
             void RemoveWrongSlotType()
             {
                 if (settings.Type == ContainerType.Storage)
@@ -124,7 +129,7 @@ namespace Game.Inventory.GUI
                 {
                     for (int i = 0; i < numOfSlotToCreate; i++)
                     {
-                        var inventorySlot = settings.Type == ContainerType.Storage ? ItemsManager.instance.GetInventorySlot() : ItemsManager.instance.GetEquipSlot();
+                        var inventorySlot = settings.Type == ContainerType.Storage ? GlobalInventoryControllerGUI.Instance.GetInventorySlot() : GlobalInventoryControllerGUI.Instance.GetEquipSlot();
                         inventorySlot.transform.SetParent(transform);
                         inventorySlot.SlotId = new SlotIdentifier(_containerId, _inventorySlots.Count);
                         _inventorySlots.Add(inventorySlot);

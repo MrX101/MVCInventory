@@ -103,7 +103,7 @@ namespace Game.Inventory
         {
             if (TakeItem(out var item, request))
             {
-                ItemsManager.instance.CreateWorldItem(item, position, rotation);
+                ItemsManager.Instance.CreateWorldItem(item, position, rotation);
                 return true;
             }
             return false;

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Game.Inventory.GUI;
+﻿using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -7,16 +7,39 @@ using UnityEngine.Serialization;
 namespace Game.Inventory
 {
     [CreateAssetMenu(fileName = "WorldItemsManager", menuName = "Create ItemsManager", order = 0)]
-    public class ItemsManager : ScriptableSingleton<ItemsManager>
+    public class ItemsManager : ScriptableObject
     {
-        [SerializeField]private WorldItem _worldItemPrefab;
+        public static ItemsManager _instance;
         
-        [SerializeField]private InventoryItemGUI _inventoryItemPrefab;
-        [SerializeField]private InventorySlot_GUI _inventorySlotPrefab;
-        [SerializeField]private InventoryEquipSlot_GUI _inventoryEquipSlotPrefab;
+        public static ItemsManager Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    var itemsFound = Resources.FindObjectsOfTypeAll<ItemsManager>();
+                    if (itemsFound.Length == 0)
+                    {
+                        Debug.Log(nameof(ItemsManager)+" Not Found");
+                    }
+                    else if (itemsFound.Length > 1)
+                    {
+                        Debug.Log("Too many "+ nameof(ItemsManager)+" Found");
+                    }
+                    else
+                    {
+                        _instance = itemsFound[0];
+                    }
+                }
+                return _instance;
+            }
+        }
+        
+        [SerializeField]private WorldItem _worldItemPrefab;
 
         private List<WorldItem> _worldItems = new List<WorldItem>();
         
+
 
         public void TakeItem( WorldItem worldItem, Inventory userInventory)
         {
@@ -31,21 +54,6 @@ namespace Game.Inventory
             _worldItems.Add(worldItem);
         }
 
-        public InventoryItemGUI GetGUIItem()
-        {
-            return Instantiate(_inventoryItemPrefab);
-        }
-
-        public InventorySlot_GUI GetInventorySlot()
-        {
-            return Instantiate(_inventorySlotPrefab);
-        }
-
-        public InventoryEquipSlot_GUI GetEquipSlot()
-        {
-            return Instantiate(_inventoryEquipSlotPrefab);
-        }
-        
         private WorldItem GetWorldItem(Vector3 position, Quaternion rotation)
         {
             return Instantiate(_worldItemPrefab, position, rotation);

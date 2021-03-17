@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using Game.Inventory;
 using Game.Inventory.GUI;
-using NaughtyAttributes;
 
 namespace Game.Units
 {
@@ -15,9 +12,9 @@ namespace Game.Units
         private void Start()
         {
             //which Inventory do we use the one here or one in InventoryControllerGUI?
-            _inventory.ContainerSettings = GlobalInventoryControllerGUI.instance.PlayerContainersSettings;
+            _inventory.ContainerSettings = GlobalInventoryControllerGUI.Instance.PlayerContainersSettings;
             _inventory.Initialize();
-            GlobalInventoryControllerGUI.instance.InitPlayerInventory(_inventory);
+            GlobalInventoryControllerGUI.Instance.InitPlayerInventory(_inventory);
         }
 
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Game.Inventory.GUI
 {
@@ -12,12 +13,30 @@ namespace Game.Inventory.GUI
         protected Action<SlotIdentifier> OnItemRemovedEvent;
 
         protected RectTransform _rectTransform;
+        
+        protected RawImage _backgroundImage;
+        protected RawImage _foregroundImage;
+        
+        protected readonly Color _transparent = new Color(1f, 1f, 1f, 0f);
+        [Header("Icon Settings - while no Item")]
+        [SerializeField]protected Color _iconColor = Color.white;
+        [SerializeField]protected Texture _icon;
 
         protected void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
+            _backgroundImage = GetComponent<RawImage>();
+            _foregroundImage = transform.GetChild(0).GetComponent<RawImage>();
         }
-        
+
+        private void Start()
+        {
+            if (_foregroundImage.texture == null)
+            {
+                _foregroundImage.color = _transparent;
+            }
+        }
+
         public SlotIdentifier SlotId
         {
             get => _slotId;
@@ -26,12 +45,12 @@ namespace Game.Inventory.GUI
 
         private void OnEnable()
         {
-            OnItemDroppedEvent += GlobalInventoryControllerGUI.instance.ItemDroppedIn;
+            OnItemDroppedEvent += GlobalInventoryControllerGUI.Instance.ItemDroppedIn;
         }
 
         private void OnDisable()
         {
-            OnItemDroppedEvent -= GlobalInventoryControllerGUI.instance.ItemDroppedIn;
+            OnItemDroppedEvent -= GlobalInventoryControllerGUI.Instance.ItemDroppedIn;
         }
 
         public void OnDrop(PointerEventData eventData)
@@ -55,9 +74,9 @@ namespace Game.Inventory.GUI
 
         protected void CreateItem()
         {
-            _item = ItemsManager.instance.GetGUIItem();
-            _item.transform.parent = _rectTransform.parent;
-            _item.OnBeginDragEvent += GlobalInventoryControllerGUI.instance.SetAsDragged;
+            _item = GlobalInventoryControllerGUI.Instance.GetGUIItem();
+            _item.transform.root.SetParent(_rectTransform.parent); 
+            _item.OnBeginDragEvent += GlobalInventoryControllerGUI.Instance.SetAsDragged;
         }
 
         protected void Internal_UpdateItemInfoAndLocation(SlotIdentifier slotId,  ItemInfo itemInfo)
@@ -67,11 +86,20 @@ namespace Game.Inventory.GUI
                 if (_item != null) { DestroyItem(); }
                 _item = null;
                 OnItemRemovedEvent?.Invoke(_slotId);
+                if (_icon == null)
+                {
+                    SetIcon(null, _transparent);
+                }
+                else
+                {
+                    SetIcon(_icon, _iconColor);
+                }
                 return;
             }
             if (_item == null) { CreateItem(); }
             _item.SetItemInfo(itemInfo);
             _item.PlaceInSlot(_rectTransform, slotId);
+            SetIcon(null, _transparent);
         }
 
         protected void DestroyItem()
@@ -80,6 +108,12 @@ namespace Game.Inventory.GUI
             _item = null;
         }
 
+        public void SetIcon(Texture texture, Color color)
+        {
+            _foregroundImage.texture = texture;
+            _foregroundImage.color = color;
+        }
+        
         public void ReturnItemToSlot()
         {
             _item.ReturnToSlot();

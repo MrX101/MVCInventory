@@ -100,10 +100,11 @@ namespace Game.Inventory.GUI
             {
                 Awake();
             }
-            _rectTransform.anchoredPosition = rect.anchoredPosition;
+
             _rectTransform.sizeDelta = rect.sizeDelta;
             _rectTransform.anchorMin = rect.anchorMin;
             _rectTransform.anchorMax = rect.anchorMax;
+            _rectTransform.anchoredPosition = rect.anchoredPosition;
             _originalPosition = rect.anchoredPosition;
         }
 
@@ -128,7 +129,7 @@ namespace Game.Inventory.GUI
         public void OnDrop(PointerEventData eventData)
         {
             OnDropEvent?.Invoke(this);
-            GlobalInventoryControllerGUI.instance.ItemDroppedIn(_slotId);
+            GlobalInventoryControllerGUI.Instance.ItemDroppedIn(_slotId);
         }
     }
 }

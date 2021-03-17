@@ -10,13 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b099672b5c5141728363978fdc258291, type: 3}
-  m_Name: ItemsManager
+  m_Name: WorldItemsManager
   m_EditorClassIdentifier: 
   _worldItemPrefab: {fileID: 7987055602337542190, guid: e16942c14b3a2704ba34c8a8b1d0f4ec,
-    type: 3}
-  _inventoryItemPrefab: {fileID: 6539912704127328978, guid: 56071991c0c50f5448ab9e2946b357ab,
-    type: 3}
-  _inventorySlotPrefab: {fileID: 7021925904703122453, guid: d429df3a83e812e4587193e02810230f,
-    type: 3}
-  _inventoryEquipSlotPrefab: {fileID: 480749061619503354, guid: 045e4950cb6fc7244bc5ff572a6e3fcc,
     type: 3}

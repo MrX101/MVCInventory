@@ -6,12 +6,12 @@ namespace Game.Inventory.GUI
     {
         private void OnEnable()
         {
-            OnItemDroppedEvent += GlobalInventoryControllerGUI.instance.EquipItemDroppedIn;
+            OnItemDroppedEvent += GlobalInventoryControllerGUI.Instance.EquipItemDroppedIn;
         }
 
         private void OnDisable()
         {
-            OnItemDroppedEvent -= GlobalInventoryControllerGUI.instance.EquipItemDroppedIn;
+            OnItemDroppedEvent -= GlobalInventoryControllerGUI.Instance.EquipItemDroppedIn;
         }
     }
 }

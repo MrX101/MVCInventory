@@ -35,6 +35,12 @@ MonoBehaviour:
       minStackSize: 1
       maxStackSize: 1
     AllowedItemTypes: 000000000100000002000000
+  _inventoryItemPrefab: {fileID: 6539912704127328978, guid: 56071991c0c50f5448ab9e2946b357ab,
+    type: 3}
+  _inventorySlotPrefab: {fileID: 7021925904703122449, guid: d429df3a83e812e4587193e02810230f,
+    type: 3}
+  _inventoryEquipSlotPrefab: {fileID: 3044490806428934207, guid: 42c55e5328462304a90c3b68bcf5491d,
+    type: 3}
   references:
     version: 1
     00000000:
@@ -42,18 +48,18 @@ MonoBehaviour:
       data:
         _name: testItem1
         _sprite: {fileID: 0}
-        _description: testItem1
-        _uniqueId: 4ad2d
-        _itemType: 2
+        _description: description1
+        _uniqueId: 12513
+        _itemType: 0
         _maxStackSize: 1
         _currentStackSize: 1
     00000001:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: testItem2
+        _name: TestItem2
         _sprite: {fileID: 0}
-        _description: testItem2
-        _uniqueId: 39b6d
+        _description: Description2
+        _uniqueId: 773ce
         _itemType: 0
         _maxStackSize: 1
         _currentStackSize: 1
