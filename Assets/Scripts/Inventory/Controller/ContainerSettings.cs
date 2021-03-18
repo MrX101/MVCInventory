@@ -21,21 +21,13 @@ namespace Game.Inventory
 
         public void OnValidate()
         {
-            foreach (var itemSetting in ItemsToCreate)
+            foreach (ItemSettings itemSetting in ItemsToCreate)
             {
-                //itemSetting.IsValid();
-            }
-        }
-        
-        public void SetItems()
-        {
-            foreach (var itemSetting in ItemsToCreate)
-            {
-                itemSetting.SetItem();
+                itemSetting.Validate();
             }
         }
 
-        public bool CreateInstance(out DataInventoryContainer container)
+        public bool CreateContainerInstance(out DataInventoryContainer container)
         {
             if (AmINull())
             {
@@ -84,8 +76,56 @@ namespace Game.Inventory
         [SerializeField]public int minStackSize = 1;
         [SerializeField]public int maxStackSize = 1;
 
-        public bool IsValid()
+        public void Validate()
         {
+            if (Item == null)
+            {
+                Item = CreateItem(ItemClass);
+            }
+            
+            if (string.IsNullOrWhiteSpace(Item.UniqueId))
+            {
+                Item.UniqueId = ItemHelper.GenerateID();
+            }
+            
+            if (!IsChanceToSpawnValid())
+            {
+                ChanceToSpawn = 0f;
+            }
+
+            if (!IsCurrentItemStackSizeValid())
+            {
+                Item.CurrentStackSize = 1;
+            }
+
+            if (!IsMaxItemStackSizeValid())
+            {
+                Item.MaxStackSize = Item.CurrentStackSize;
+            }
+
+            if (!IsMinStackSizeValid())
+            {
+                minStackSize = 1;
+            }
+
+            if (!IsMaxStackSizeValid())
+            {
+                maxStackSize = Item.MaxStackSize;
+            }
+        }
+
+        private bool IsMaxStackSizeValid()
+        {
+            return maxStackSize > 0 && maxStackSize <= Item.MaxStackSize;
+        }
+
+        private bool IsMinStackSizeValid()
+        {
+            return minStackSize > 0 && minStackSize <= Item.MaxStackSize;
+        }
+
+        public bool IsValid()
+        {    
             return (Item != null &&
                     ChanceToSpawn > 0f && ChanceToSpawn <= 100f &&
                     Item.MaxStackSize > 0 && Item.CurrentStackSize > 0 &&
@@ -94,31 +134,44 @@ namespace Game.Inventory
                     maxStackSize > 0 && maxStackSize <= Item.MaxStackSize);
         }
 
-        public int GenerateStackSize()
+        private bool IsChanceToSpawnValid()
         {
-            return UnityEngine.Random.Range(minStackSize, maxStackSize+1);
+            return ChanceToSpawn > 0f && ChanceToSpawn <= 100f;
         }
         
-        [Button("Create Item", EButtonEnableMode.Editor)]
-        public void SetItem()
+        private bool IsCurrentItemStackSizeValid()
         {
-            Item = CreateItem();
+            return Item.CurrentStackSize > 0;
         }
         
+        private bool IsMaxItemStackSizeValid()
+        {
+            return Item.MaxStackSize > 0 && Item.MaxStackSize >= Item.CurrentStackSize;
+        }
+        
+
+        public bool RollSpawnChance()
+        {
+            return ChanceToSpawn >= UnityEngine.Random.Range(0f, 100f);
+        }
+
+        public void RollStackSize()
+        {
+            if (Item.CurrentStackSize < Item.MaxStackSize)
+            {
+                Item.CurrentStackSize = UnityEngine.Random.Range(minStackSize, maxStackSize+1);
+            }
+            Item.CurrentStackSize = Mathf.Clamp(Item.CurrentStackSize,minStackSize,Item.MaxStackSize);
+        }
+
         //Warning Will need to update this as new classes that subscribe to IItem get added.
-        private IItem CreateItem()
+        public static IItem CreateItem(ItemClasses itemClass)
         {
-            if (ItemClass == ItemClasses.Baseclass)
+            if (itemClass == ItemClasses.Baseclass)
             {
                 return new BaseItem();
             }
             return default;
         }
-    }
-    
-    //Warning Will need to update this as new classes that subscribe to IItem get added.
-    public enum ItemClasses
-    {
-        Baseclass,
     }
 }

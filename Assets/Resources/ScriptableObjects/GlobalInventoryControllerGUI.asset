@@ -1,0 +1,133 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e45decc5ca941fdb6dac572ebe5b9ab, type: 3}
+  m_Name: GlobalInventoryControllerGUI
+  m_EditorClassIdentifier: 
+  _playerContainersSettings:
+  - Identifier: playerInventory
+    NumberOfSlots: 25
+    Type: 0
+    ItemsToCreate:
+    - ItemClass: 0
+      Item:
+        id: 0
+      ChanceToSpawn: 100
+      minStackSize: 1
+      maxStackSize: 1
+    - ItemClass: 0
+      Item:
+        id: 1
+      ChanceToSpawn: 100
+      minStackSize: 1
+      maxStackSize: 1
+    - ItemClass: 0
+      Item:
+        id: 2
+      ChanceToSpawn: 100
+      minStackSize: 1
+      maxStackSize: 1
+    AllowedItemTypes: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
+  - Identifier: playerInventory2
+    NumberOfSlots: 5
+    Type: 1
+    ItemsToCreate:
+    - ItemClass: 0
+      Item:
+        id: 3
+      ChanceToSpawn: 100
+      minStackSize: 1
+      maxStackSize: 1
+    AllowedItemTypes: 00000000010000000200000003000000040000000500000006000000
+  - Identifier: chest
+    NumberOfSlots: 1
+    Type: 1
+    ItemsToCreate:
+    - ItemClass: 0
+      Item:
+        id: 4
+      ChanceToSpawn: 100
+      minStackSize: 1
+      maxStackSize: 1
+    AllowedItemTypes: 03000000
+  - Identifier: head
+    NumberOfSlots: 1
+    Type: 1
+    ItemsToCreate: []
+    AllowedItemTypes: 06000000
+  - Identifier: boots
+    NumberOfSlots: 1
+    Type: 1
+    ItemsToCreate: []
+    AllowedItemTypes: 05000000
+  - Identifier: arms
+    NumberOfSlots: 1
+    Type: 1
+    ItemsToCreate: []
+    AllowedItemTypes: 04000000
+  _inventoryItemPrefab: {fileID: 6539912704127328978, guid: 56071991c0c50f5448ab9e2946b357ab,
+    type: 3}
+  _inventorySlotPrefab: {fileID: 7021925904703122449, guid: d429df3a83e812e4587193e02810230f,
+    type: 3}
+  _inventoryEquipSlotPrefab: {fileID: 3044490806428934207, guid: 42c55e5328462304a90c3b68bcf5491d,
+    type: 3}
+  references:
+    version: 1
+    00000000:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: asd
+        _sprite: {fileID: 21300000, guid: 97bed73870dd5964d892b17ff23d5261, type: 3}
+        _description: asdsd
+        _uniqueId: 28417
+        _itemType: 6
+        _maxStackSize: 1
+        _currentStackSize: 1
+    00000001:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: asdsd
+        _sprite: {fileID: 21300000, guid: 53afd1d31f3bb09428ff053cd1164801, type: 3}
+        _description: asdasddsd
+        _uniqueId: 3dbb8
+        _itemType: 3
+        _maxStackSize: 1
+        _currentStackSize: 1
+    00000002:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: asdasd
+        _sprite: {fileID: 21300000, guid: e9a6166312bce89409807141e86966b0, type: 3}
+        _description: asdads
+        _uniqueId: 2c876
+        _itemType: 3
+        _maxStackSize: 1
+        _currentStackSize: 1
+    00000003:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: 
+        _sprite: {fileID: 0}
+        _description: 
+        _uniqueId: 6c929
+        _itemType: 0
+        _maxStackSize: 1
+        _currentStackSize: 1
+    00000004:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: 
+        _sprite: {fileID: 0}
+        _description: 
+        _uniqueId: cd6fc
+        _itemType: 0
+        _maxStackSize: 1
+        _currentStackSize: 1

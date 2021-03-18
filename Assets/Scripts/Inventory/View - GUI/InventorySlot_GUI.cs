@@ -27,6 +27,7 @@ namespace Game.Inventory.GUI
             _rectTransform = GetComponent<RectTransform>();
             _backgroundImage = GetComponent<RawImage>();
             _foregroundImage = transform.GetChild(0).GetComponent<RawImage>();
+            UpdateIcon();
         }
 
         private void Start()
@@ -55,6 +56,10 @@ namespace Game.Inventory.GUI
 
         public void OnDrop(PointerEventData eventData)
         {
+            if (_slotId == null)
+            {
+                Debug.Log("Error this slot "+ gameObject.name +" does not have it's slotId set correctly");
+            }
             OnItemDroppedEvent?.Invoke(_slotId);
         }
 
@@ -86,20 +91,25 @@ namespace Game.Inventory.GUI
                 if (_item != null) { DestroyItem(); }
                 _item = null;
                 OnItemRemovedEvent?.Invoke(_slotId);
-                if (_icon == null)
-                {
-                    SetIcon(null, _transparent);
-                }
-                else
-                {
-                    SetIcon(_icon, _iconColor);
-                }
+                UpdateIcon();
                 return;
             }
             if (_item == null) { CreateItem(); }
             _item.SetItemInfo(itemInfo);
             _item.PlaceInSlot(_rectTransform, slotId);
             SetIcon(null, _transparent);
+        }
+
+        private void UpdateIcon()
+        {
+            if (_icon == null)
+            {
+                SetIcon(null, _transparent);
+            }
+            else
+            {
+                SetIcon(_icon, _iconColor);
+            }
         }
 
         protected void DestroyItem()
@@ -125,6 +135,15 @@ namespace Game.Inventory.GUI
             _item = null;
             OnItemRemovedEvent?.Invoke(_slotId);
             return temp;
+        }
+
+        private void OnValidate()
+        {
+            if (_foregroundImage == null)
+            {
+                _foregroundImage = transform.GetChild(0).GetComponent<RawImage>();
+            }
+            UpdateIcon();
         }
     }
 }

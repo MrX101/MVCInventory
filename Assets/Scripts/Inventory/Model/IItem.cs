@@ -17,12 +17,30 @@ namespace Game.Inventory
         IItem CreateEmptyDuplicate();
     }
     
+    public static class ItemHelper
+    {
+        public static string GenerateID()
+        {
+            return Guid.NewGuid().ToString().Substring(0, 5);
+        }
+    }
+    
+    //Warning Will need to update this as new classes that subscribe to IItem get added.
+    public enum ItemClasses
+    {
+        Baseclass,
+    }
+    
     
     public enum ItemType
     {
         Gun,
         Melee,
         Grenade,
+        Chest,
+        Arms,
+        Leg,
+        Head,
         Consumable,
         Ammo,
         Currency,

@@ -171,14 +171,5 @@ namespace Game.Inventory.GUI
                 containerSetting.OnValidate();
             }
         }
-
-        [Button("SetItems")]
-        private void AddItems()
-        {
-            foreach (var containerSetting in _playerContainersSettings)
-            {
-                containerSetting.SetItems();
-            }
-        }
     }
 }

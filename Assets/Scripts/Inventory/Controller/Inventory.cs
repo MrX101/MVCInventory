@@ -39,19 +39,24 @@ namespace Game.Inventory
             //todo add items
             foreach (var settings in ContainerSettings)
             {
-                if (settings.CreateInstance(out var container))
+                if (settings.CreateContainerInstance(out var container))
                 {
                     _containers.Add(settings.Identifier, container);
                 }
 
                 foreach (ItemSettings itemToCreate in settings.ItemsToCreate)
                 {
-                    if (itemToCreate.IsValid())
+                    if (!itemToCreate.IsValid())
                     {
-                        if (!StoreItem(ref itemToCreate.Item, settings.Identifier ,out var slotIds))
-                        {
-                            Debug.Log("Unable to add item");
-                        }
+                        Debug.Log(itemToCreate.Item.Name + "'s Settings in Container "+ settings.Identifier+" are not valid.");
+                    }
+                    
+                    if (!itemToCreate.RollSpawnChance()) { continue; }
+                    itemToCreate.RollStackSize();
+                    
+                    if (!StoreItem(ref itemToCreate.Item, settings.Identifier ,out var slotIds))
+                    {
+                        Debug.Log("Unable to add item");
                     }
                 }
             }
@@ -419,12 +424,16 @@ namespace Game.Inventory
 
         private bool IsRequestValid(SlotIdentifier slotIdentifier)
         {
+            if (slotIdentifier == null)
+            {
+                return false;
+            }
             return IsValidContainerId(slotIdentifier.ContainerId) && IsValidSlotIndex(slotIdentifier.ContainerId, slotIdentifier.SlotIndex);
         }
 
         private bool IsValidContainerId(string containerId)
         {
-            if (_containers.ContainsKey(containerId))
+            if (containerId != string.Empty && _containers.ContainsKey(containerId))
             {
                 return true;
             }

@@ -6,15 +6,16 @@ namespace Game.Inventory
     [Serializable]
     public class BaseItem : IItem
     {
-        [SerializeField]private string _name;
-        [SerializeField]private Sprite _sprite;
-        [SerializeField]private string _description;
-        [SerializeField]private string _uniqueId = Guid.NewGuid().ToString().Substring(0,5);
-        [SerializeField]private ItemType _itemType = ItemType.Gun;
-        [SerializeField]private int _maxStackSize = 1;
-        [SerializeField]private int _currentStackSize = 1;
+        [SerializeField] private string _name;
+        [SerializeField] private Sprite _sprite;
+        [SerializeField] private string _description;
+        [SerializeField] private string _uniqueId = ItemHelper.GenerateID();
+        [SerializeField] private ItemType _itemType = ItemType.Gun;
+        [SerializeField] private int _maxStackSize = 1;
+        [SerializeField] private int _currentStackSize = 1;
 
         #region props
+
         public string Name
         {
             get => _name;
@@ -58,7 +59,7 @@ namespace Game.Inventory
         }
 
         #endregion
-        
+
         public ItemType GetItemType()
         {
             return ItemType;
