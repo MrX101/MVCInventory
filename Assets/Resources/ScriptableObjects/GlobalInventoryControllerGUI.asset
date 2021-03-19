@@ -46,7 +46,7 @@ MonoBehaviour:
       ChanceToSpawn: 100
       minStackSize: 1
       maxStackSize: 1
-    AllowedItemTypes: 00000000010000000200000003000000040000000500000006000000
+    AllowedItemTypes: 080000000900000007000000
   - Identifier: chest
     NumberOfSlots: 1
     Type: 1

@@ -199,6 +199,70 @@ namespace Game.Inventory
             return false;
         }
         
+        ///Equips Item in first available Equip Container, that accepts that type of item.
+        /// If the first viable container has no available slots, it will equip them in the first slot and
+        /// put the other item in Storage.
+        public bool EquipItemAnywhere(SlotIdentifier fromSlotId, out List<SlotInfo> resultSlotIds)
+        {
+            resultSlotIds = new List<SlotInfo>();
+            if (!IsRequestValid(fromSlotId)) { return false; }
+            if (IsRequestSlotEmpty(fromSlotId)) { return false; }
+
+            var fromContainer = _containers[fromSlotId.ContainerId];
+            var fromItemType = fromContainer.GetItemTypeOfItemInSlot(fromSlotId.SlotIndex);
+            
+            foreach (var KVP in _containers)
+            {
+                var toContainer = KVP.Value;
+                if (toContainer is DataEquiptmentContainer || toContainer is DataWeaponWheelContainer)
+                {
+                    if (!toContainer.CanStoreItemType(fromItemType)) { continue; }
+
+                    if (toContainer.HasEmptySlots())
+                    {
+                        fromContainer.TakeItem(fromSlotId.SlotIndex, out var fromItem);
+                        toContainer.StoreInFirstEmptySlot(ref fromItem, out var toSlotId);
+                        fromContainer.GetItemSlotInfo(fromSlotId.SlotIndex, out var fromSlotInfo);
+                        toContainer.GetItemSlotInfo(toSlotId.SlotIndex, out var toSlotInfo);
+                        resultSlotIds.Add(fromSlotInfo);
+                        resultSlotIds.Add(toSlotInfo);
+                        return true;
+                    }
+                    else if (toContainer.CanStoreItemType(fromItemType))
+                    {
+                        InternalSwap(fromSlotId, new SlotIdentifier(toContainer.ContainerId, 0),
+                            ref fromContainer, ref toContainer, 
+                            out var fromSlotInfo, out var toSlotInfo );
+                        resultSlotIds.Add(fromSlotInfo);
+                        resultSlotIds.Add(toSlotInfo);
+                        return true;
+                    }
+                    else
+                    {
+                        //for when you can't swap, because the fromContainer can't store the toContainer's  item.
+                        //So we store that item in first available container.
+                        fromContainer.TakeItem(fromSlotId.SlotIndex, out var fromItem);
+                        toContainer.TakeItem(0, out var toItem);
+                        
+                        toContainer.StoreItem(ref fromItem, 0);
+                        toContainer.GetItemSlotInfo(fromSlotId.SlotIndex, out var toSlotInfo);
+                        resultSlotIds.Add(toSlotInfo);
+                        StoreItemAnywhere(ref toItem, out var outList);
+                        foreach (var slotId in outList)
+                        {
+                            _containers[slotId.ContainerId].GetItemSlotInfo(slotId.SlotIndex, out var slotInfo);
+                            resultSlotIds.Add(slotInfo);
+                        }
+
+                        fromContainer.GetItemSlotInfo(fromSlotId.SlotIndex, out var fromSlotInfo);
+                        resultSlotIds.Add(fromSlotInfo);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        
         ///Stores Item in first available slot of specified container
         public bool StoreItem(ref IItem item, string containerId , out List<SlotIdentifier> resultSlotIds)
         {
@@ -229,6 +293,7 @@ namespace Game.Inventory
             
             return false;
         }
+        
         
         /// <summary>
         /// Store Item in Specific container/Slot.
@@ -342,7 +407,7 @@ namespace Game.Inventory
                     fromContainer.TakeItem(fromRequest.SlotIndex, out var item);
                     toContainer.StoreItem(ref item, toRequest.SlotIndex);
                     fromContainer.GetItemSlotInfo(fromRequest.SlotIndex, out var fromItemInfo);
-                    fromContainer.GetItemSlotInfo(toRequest.SlotIndex, out var toItemInfo);
+                    toContainer.GetItemSlotInfo(toRequest.SlotIndex, out var toItemInfo);
                     responseSlotsInfo.Add(fromItemInfo);
                     responseSlotsInfo.Add(toItemInfo);
                     return true;
@@ -368,16 +433,16 @@ namespace Game.Inventory
 
         private void InternalSwap(SlotIdentifier fromRequest, SlotIdentifier toRequest,
             ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer,
-            out SlotInfo FromItemInfo, out SlotInfo ToItemInfo)
+            out SlotInfo FromSlotInfo, out SlotInfo ToSlotInfo)
         {
             fromContainer.TakeItem(fromRequest.SlotIndex, out var fromItem);
             toContainer.TakeItem(toRequest.SlotIndex, out var toItem);
             fromContainer.StoreItem(ref toItem, fromRequest.SlotIndex);
             toContainer.StoreItem(ref fromItem, toRequest.SlotIndex);
-            fromContainer.GetItemSlotInfo(fromRequest.SlotIndex, out SlotInfo fromItemInfo );
-            toContainer.GetItemSlotInfo(toRequest.SlotIndex, out SlotInfo toItemInfo );
-            FromItemInfo = fromItemInfo;
-            ToItemInfo = toItemInfo;
+            fromContainer.GetItemSlotInfo(fromRequest.SlotIndex, out SlotInfo fromSlotInfo );
+            toContainer.GetItemSlotInfo(toRequest.SlotIndex, out SlotInfo toSlotInfo );
+            FromSlotInfo = fromSlotInfo;
+            ToSlotInfo = toSlotInfo;
         }
         
         private void InternalMoveItem(SlotIdentifier fromRequest, SlotIdentifier toRequest,

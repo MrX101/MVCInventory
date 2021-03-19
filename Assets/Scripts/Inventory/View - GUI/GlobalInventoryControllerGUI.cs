@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NaughtyAttributes;
 using UnityEngine;
 
 namespace Game.Inventory.GUI
 {
+    
     [CreateAssetMenu(fileName = "GlobalInventoryControllerGUI", menuName = "Create GlobalInventoryControllerGUI", order = 0)]
     public class GlobalInventoryControllerGUI : ScriptableObject
     {
@@ -110,6 +112,17 @@ namespace Game.Inventory.GUI
             }
            
         }
+
+        public void EquipItemInAnyAvailableSlot(SlotIdentifier slotId)
+        {
+            if (_playerInventory.EquipItemAnywhere(slotId, out var responseSlotsInfo) )
+            {
+                foreach (var slotInfo in responseSlotsInfo)
+                {
+                    UpdateItemInfo(slotInfo.SlotId, slotInfo.Item);
+                }
+            }
+        }
         
         public void EquipItemDroppedIn(SlotIdentifier toSlotId)
         {
@@ -169,6 +182,18 @@ namespace Game.Inventory.GUI
             foreach (var containerSetting in _playerContainersSettings)
             {
                 containerSetting.OnValidate();
+            }
+        }
+
+        [Button("Reset Items")]
+        public void SetItems()
+        {
+            foreach (var containersSetting in _playerContainersSettings)
+            {
+                foreach (var itemSettings in containersSetting.ItemsToCreate)
+                {
+                    itemSettings.Item = new BaseItem();
+                }
             }
         }
     }

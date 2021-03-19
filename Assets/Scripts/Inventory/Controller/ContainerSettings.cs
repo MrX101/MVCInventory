@@ -11,7 +11,7 @@ namespace Game.Inventory
         public string Identifier = "";
         public int NumberOfSlots = 0;
         public ContainerType Type;
-        public List<ItemSettings> ItemsToCreate = new List<ItemSettings>();
+        [SerializeField]public List<ItemSettings> ItemsToCreate = new List<ItemSettings>();
         
         [SerializeField]
         public ItemType[] AllowedItemTypes = 
@@ -76,6 +76,11 @@ namespace Game.Inventory
         [SerializeField]public int minStackSize = 1;
         [SerializeField]public int maxStackSize = 1;
 
+        public ItemSettings()
+        {
+            Item = CreateItem(ItemClass);
+        }
+        
         public void Validate()
         {
             if (Item == null)
@@ -110,18 +115,18 @@ namespace Game.Inventory
 
             if (!IsMaxStackSizeValid())
             {
-                maxStackSize = Item.MaxStackSize;
+                maxStackSize = minStackSize;
             }
         }
 
         private bool IsMaxStackSizeValid()
         {
-            return maxStackSize > 0 && maxStackSize <= Item.MaxStackSize;
+            return maxStackSize > 0 && maxStackSize >= minStackSize;
         }
 
         private bool IsMinStackSizeValid()
         {
-            return minStackSize > 0 && minStackSize <= Item.MaxStackSize;
+            return minStackSize > 0;
         }
 
         public bool IsValid()
@@ -171,7 +176,7 @@ namespace Game.Inventory
             {
                 return new BaseItem();
             }
-            return default;
+            return null;
         }
     }
 }

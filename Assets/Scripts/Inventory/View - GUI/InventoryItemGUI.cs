@@ -1,4 +1,5 @@
 ﻿using System;
+using Game.Timers;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -26,7 +27,8 @@ namespace Game.Inventory.GUI
         public Action<InventoryItemGUI> OnClickedEvent;
         public Action<InventoryItemGUI> OnDropEvent;
 
-
+        private Cooldown _doubleClickCooldown = new Cooldown(0.3f);
+        
         public SlotIdentifier SlotId
         {
             get => _slotId;
@@ -83,6 +85,23 @@ namespace Game.Inventory.GUI
 
         public void OnPointerClick(PointerEventData eventData)
         {
+            if (eventData.button == PointerEventData.InputButton.Left)
+            {
+                if (_doubleClickCooldown.HasStarted() && !_doubleClickCooldown.HasFinished(true))
+                {
+                    EquipInFirstAvailable();
+                    Debug.Log("Double Click");
+                }
+                else
+                {
+                    _doubleClickCooldown.StartCountDown();
+                    Debug.Log("Left Click");
+                }
+            }
+            else if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                Debug.Log("Right Click");
+            }
             OnClickedEvent?.Invoke(this);
         }
 
@@ -90,6 +109,11 @@ namespace Game.Inventory.GUI
         {
             _item = itemInfo;
             UpdateSpriteAndStackSize();
+        }
+
+        private void EquipInFirstAvailable()
+        {
+            GlobalInventoryControllerGUI.Instance.EquipItemInAnyAvailableSlot(_slotId);
         }
 
         public void PlaceInSlot(RectTransform rect, SlotIdentifier slotId)

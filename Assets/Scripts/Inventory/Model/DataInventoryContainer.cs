@@ -107,6 +107,12 @@ namespace Game.Inventory
             return !_inventorySlots[slotIndex].HasItem();
         }
         
+        ///Check that slot Exists first.
+        public bool HasItem(int slotIndex)
+        {
+            return _inventorySlots[slotIndex].HasItem();
+        }
+        
         public void AddMoreSlots(int numOfSlots)
         {
             CreateSlots(numOfSlots);
@@ -363,6 +369,20 @@ namespace Game.Inventory
             }
             slotIndex = -1;
             return false;
+        }
+
+        public bool HasEmptySlots()
+        {
+            bool hasEmpty = false;
+            foreach (var invSlot in _inventorySlots)
+            {
+                if (!invSlot.HasItem())
+                {
+                    hasEmpty = true;
+                    break;
+                }
+            }
+            return hasEmpty;
         }
         
         protected bool GetEmptySlotsIndex(int numOfEmptySlotsNeeded, out int[] indexOfEmptySlots)
