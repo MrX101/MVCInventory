@@ -183,16 +183,27 @@ namespace Game.Inventory.GUI
             {
                 containerSetting.OnValidate();
             }
+            FixItemDuplicates();
         }
 
-        [Button("Reset Items")]
-        public void SetItems()
+        //This is needed because Unity automatically duplicates the previous array entry in the inspector, when a new one is added.
+        //Since the items are shown by reference(ie the [SerializeReference] attribute), it will share the same item between multiple array entries.
+        //This will remove the duplicate references.
+        public void FixItemDuplicates()
         {
+            List<IItem> itemsList = new List<IItem>();
             foreach (var containersSetting in _playerContainersSettings)
             {
                 foreach (var itemSettings in containersSetting.ItemsToCreate)
                 {
-                    itemSettings.Item = new BaseItem();
+                    var item = itemSettings.Item;
+                    if (itemsList.Contains(item))
+                    {
+                        itemSettings.Item = ItemSettings.CreateItem(itemSettings.ItemClass);
+                        itemsList.Add(itemSettings.Item);
+                        continue;
+                    }
+                    itemsList.Add(item);
                 }
             }
         }

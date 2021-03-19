@@ -35,6 +35,12 @@ MonoBehaviour:
       ChanceToSpawn: 100
       minStackSize: 1
       maxStackSize: 1
+    - ItemClass: 0
+      Item:
+        id: 3
+      ChanceToSpawn: 100
+      minStackSize: 1
+      maxStackSize: 1
     AllowedItemTypes: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
   - Identifier: playerInventory2
     NumberOfSlots: 5
@@ -42,7 +48,19 @@ MonoBehaviour:
     ItemsToCreate:
     - ItemClass: 0
       Item:
-        id: 3
+        id: 4
+      ChanceToSpawn: 100
+      minStackSize: 1
+      maxStackSize: 1
+    - ItemClass: 0
+      Item:
+        id: 5
+      ChanceToSpawn: 100
+      minStackSize: 1
+      maxStackSize: 1
+    - ItemClass: 0
+      Item:
+        id: 6
       ChanceToSpawn: 100
       minStackSize: 1
       maxStackSize: 1
@@ -53,7 +71,7 @@ MonoBehaviour:
     ItemsToCreate:
     - ItemClass: 0
       Item:
-        id: 4
+        id: 7
       ChanceToSpawn: 100
       minStackSize: 1
       maxStackSize: 1
@@ -71,7 +89,25 @@ MonoBehaviour:
   - Identifier: arms
     NumberOfSlots: 1
     Type: 1
-    ItemsToCreate: []
+    ItemsToCreate:
+    - ItemClass: 0
+      Item:
+        id: 8
+      ChanceToSpawn: 0
+      minStackSize: 1
+      maxStackSize: 1
+    - ItemClass: 0
+      Item:
+        id: 9
+      ChanceToSpawn: 0
+      minStackSize: 1
+      maxStackSize: 1
+    - ItemClass: 0
+      Item:
+        id: 10
+      ChanceToSpawn: 0
+      minStackSize: 1
+      maxStackSize: 1
     AllowedItemTypes: 04000000
   _inventoryItemPrefab: {fileID: 6539912704127328978, guid: 56071991c0c50f5448ab9e2946b357ab,
     type: 3}
@@ -84,40 +120,40 @@ MonoBehaviour:
     00000000:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: asd
-        _sprite: {fileID: 21300000, guid: 97bed73870dd5964d892b17ff23d5261, type: 3}
-        _description: asdsd
-        _uniqueId: 28417
-        _itemType: 6
+        _name: 
+        _sprite: {fileID: 0}
+        _description: 
+        _uniqueId: 31139
+        _itemType: 0
         _maxStackSize: 1
         _currentStackSize: 1
     00000001:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: asdsd
-        _sprite: {fileID: 21300000, guid: 53afd1d31f3bb09428ff053cd1164801, type: 3}
-        _description: asdasddsd
-        _uniqueId: 3dbb8
-        _itemType: 3
+        _name: 
+        _sprite: {fileID: 0}
+        _description: 
+        _uniqueId: 3994a
+        _itemType: 0
         _maxStackSize: 1
         _currentStackSize: 1
     00000002:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: asdasd
-        _sprite: {fileID: 21300000, guid: e9a6166312bce89409807141e86966b0, type: 3}
-        _description: asdads
-        _uniqueId: 2c876
-        _itemType: 3
+        _name: asdas
+        _sprite: {fileID: 0}
+        _description: 
+        _uniqueId: fdc68
+        _itemType: 0
         _maxStackSize: 1
         _currentStackSize: 1
     00000003:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: 
+        _name: asdsd
         _sprite: {fileID: 0}
-        _description: 
-        _uniqueId: 6c929
+        _description: sdasd
+        _uniqueId: 77cac
         _itemType: 0
         _maxStackSize: 1
         _currentStackSize: 1
@@ -127,7 +163,67 @@ MonoBehaviour:
         _name: 
         _sprite: {fileID: 0}
         _description: 
-        _uniqueId: cd6fc
+        _uniqueId: a920f
+        _itemType: 0
+        _maxStackSize: 1
+        _currentStackSize: 1
+    00000005:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: 
+        _sprite: {fileID: 0}
+        _description: 
+        _uniqueId: 4e652
+        _itemType: 0
+        _maxStackSize: 1
+        _currentStackSize: 1
+    00000006:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: 
+        _sprite: {fileID: 0}
+        _description: 
+        _uniqueId: e2c74
+        _itemType: 0
+        _maxStackSize: 1
+        _currentStackSize: 1
+    00000007:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: 
+        _sprite: {fileID: 0}
+        _description: 
+        _uniqueId: 3eb46
+        _itemType: 0
+        _maxStackSize: 1
+        _currentStackSize: 1
+    00000008:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: 
+        _sprite: {fileID: 0}
+        _description: 
+        _uniqueId: fee56
+        _itemType: 0
+        _maxStackSize: 1
+        _currentStackSize: 1
+    00000009:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: 
+        _sprite: {fileID: 0}
+        _description: 
+        _uniqueId: 89ca5
+        _itemType: 0
+        _maxStackSize: 1
+        _currentStackSize: 1
+    0000000A:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: 
+        _sprite: {fileID: 0}
+        _description: 
+        _uniqueId: e27d8
         _itemType: 0
         _maxStackSize: 1
         _currentStackSize: 1

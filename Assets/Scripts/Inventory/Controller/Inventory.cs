@@ -56,7 +56,8 @@ namespace Game.Inventory
                     
                     if (!StoreItem(ref itemToCreate.Item, settings.Identifier ,out var slotIds))
                     {
-                        Debug.Log("Unable to add item");
+                        Debug.Log("Unable to add item '" + itemToCreate.Item.Name + 
+                                  "' in container: " + settings.Identifier);
                     }
                 }
             }

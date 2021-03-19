@@ -79,6 +79,7 @@ namespace Game.Inventory
         public ItemSettings()
         {
             Item = CreateItem(ItemClass);
+            ChanceToSpawn = 100f;
         }
         
         public void Validate()
