@@ -112,6 +112,33 @@ namespace Game.Inventory
         {
             return _inventorySlots[slotIndex].HasItem();
         }
+
+        
+        public bool CanStoreItem(ItemInfo itemInfo, out int slotIndex)
+        {
+            slotIndex = -1;
+            if (!CanStoreItemType(itemInfo.ItemType))
+            {
+                return false;
+            }
+            
+            for (int i = 0; i < _inventorySlots.Count; i++)
+            {
+                if (!_inventorySlots[i].HasItem())
+                {
+                    slotIndex = i;
+                    return true;
+                }
+                else if(itemInfo.UniqueId == _inventorySlots[i].GetUniqueId()
+                && (itemInfo.CurrentStackSize + _inventorySlots[i].GetCurrentStackSize()) <= itemInfo.MaxStackSize)
+                {
+                    //todo implement check, if it can be stored into multiple slots.
+                    slotIndex = i;
+                    return true;
+                }
+            }
+            return false;
+        }
         
         public void AddMoreSlots(int numOfSlots)
         {
@@ -162,8 +189,8 @@ namespace Game.Inventory
             return item;
         }
         
-        /// Returns amount left, if there wasn't enough.
-        public int GetSpecificAmount_SpecificItem_FromAllSlots(string itemId, int amount, out IItem outItem)
+        /// Returns amount left, if there wasn't enough. Checks all slots.
+        public int GetSpecificAmountOfItem(string itemId, int amount, out IItem outItem)
         {
             int i = _itemIdIndex[itemId][0]; //todo fix this line one we can more easily duplicate Items, since it will make zero sense to anyone else.
             var tempItem = GetEmptyDuplicate(i);
@@ -213,31 +240,6 @@ namespace Game.Inventory
             itemToStackTo.CurrentStackSize += itemToRemoveStacks.CurrentStackSize;
             itemToRemoveStacks.DeleteSelf();
         }
-        
-        ///Swap 2 slots both having items of different UniqueID
-        ///No Checks
-        // public void SwapSlots(int slotIndexOne, int slotIndexTwo, out ItemInfo slotOne, out ItemInfo slotTwo)
-        // {
-        //     var temp = _inventorySlots[slotIndexOne];
-        //     var idOne = _inventorySlots[slotIndexOne].GetUniqueId();
-        //    _inventorySlots[slotIndexOne] = _inventorySlots[slotIndexTwo];
-        //     var idTwo = _inventorySlots[slotIndexTwo].GetUniqueId();
-        //    _inventorySlots[slotIndexTwo] = temp;
-        //    
-        //    _itemIdIndex[idOne].Remove(slotIndexOne);
-        //    _itemIdIndex[idOne].Add(slotIndexTwo);
-        //
-        //    _itemIdIndex[idTwo].Remove(slotIndexTwo);
-        //    _itemIdIndex[idTwo].Add(slotIndexOne);
-        //
-        //    var item1 = _inventorySlots[slotIndexOne].TakeItem();
-        //    var item2 = _inventorySlots[slotIndexTwo].TakeItem();
-        //    _inventorySlots[slotIndexOne].StoreItem(ref item2);
-        //    _inventorySlots[slotIndexTwo].StoreItem(ref item1);
-        //    
-        //    slotOne = _inventorySlots[slotIndexOne].GetItemInfo();
-        //    slotTwo = _inventorySlots[slotIndexTwo].GetItemInfo();
-        // }
 
         ///Store Item Into EmptySlot
         public virtual void StoreItem(ref IItem itemRef, int slotIndex)
@@ -335,27 +337,6 @@ namespace Game.Inventory
             return _inventorySlots[slotIndex].GetUniqueId();
         }
 
-        //todo Decide, in what situation is this useful since items will always get added/removed?...
-        //todo ...Possibly to avoid saving the index values into a file?
-        // protected void SetSlotIndexDictionary()
-        // {
-        //     for (int i = 0; i < _inventorySlots.Count; i++)
-        //     {
-        //         if (!_inventorySlots[i].HasItem()) { continue; }
-        //         
-        //         if (!_itemIdSlotDict.ContainsKey(_inventorySlots[i].GetUniqueId()))
-        //         {
-        //             var list = new List<int>();
-        //             list.Add(i);
-        //             _itemIdSlotDict.Add(_inventorySlots[i].GetUniqueId(),list);
-        //         }
-        //         else
-        //         {
-        //             _itemIdSlotDict[_inventorySlots[i].GetUniqueId()].Add(i);
-        //         }
-        //     }
-        // }
-        
         /// False if no empty slots
         public bool FindFirstEmptySlotIndex(out int slotIndex)
         {

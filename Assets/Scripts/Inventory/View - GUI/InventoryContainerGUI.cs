@@ -9,8 +9,7 @@ namespace Game.Inventory.GUI
 {
     public class InventoryContainerGUI : MonoBehaviour
     {
-        // [Header("Select what type of Container this will be")]
-        // [SerializeField] public GUIContainerSlot _containerSelection;
+        [SerializeField]protected GlobalInventoryControllerGUI _inventoryControllerGUI;
         
         private RectTransform _rectTransform;
         [SerializeField]private string _containerId;
@@ -44,7 +43,7 @@ namespace Game.Inventory.GUI
             CreateSlots(settings);
             StartCoroutine(AddItems_CR(containerInfo));
             
-            GlobalInventoryControllerGUI.Instance.RegisterContainer(this);
+            _inventoryControllerGUI.RegisterContainer(this);
         }
         
         //!!WARNING!!
@@ -129,7 +128,7 @@ namespace Game.Inventory.GUI
                 {
                     for (int i = 0; i < numOfSlotToCreate; i++)
                     {
-                        var inventorySlot = settings.Type == ContainerType.Storage ? GlobalInventoryControllerGUI.Instance.GetInventorySlot() : GlobalInventoryControllerGUI.Instance.GetEquipSlot();
+                        var inventorySlot = settings.Type == ContainerType.Storage ? _inventoryControllerGUI.GetInventorySlot() : _inventoryControllerGUI.GetEquipSlot();
                         inventorySlot.transform.SetParent(transform);
                         inventorySlot.SlotId = new SlotIdentifier(_containerId, _inventorySlots.Count);
                         _inventorySlots.Add(inventorySlot);

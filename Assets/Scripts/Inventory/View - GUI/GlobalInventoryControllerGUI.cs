@@ -10,32 +10,6 @@ namespace Game.Inventory.GUI
     [CreateAssetMenu(fileName = "GlobalInventoryControllerGUI", menuName = "Create GlobalInventoryControllerGUI", order = 0)]
     public class GlobalInventoryControllerGUI : ScriptableObject
     {
-        private static GlobalInventoryControllerGUI _instance;
-
-        public static GlobalInventoryControllerGUI Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    var resourcesFound = Resources.FindObjectsOfTypeAll<GlobalInventoryControllerGUI>();
-                    if (resourcesFound.Length == 0)
-                    {
-                        Debug.Log(nameof(GlobalInventoryControllerGUI)+" Not Found");
-                    }
-                    else if (resourcesFound.Length > 1)
-                    {
-                        Debug.Log("Too many "+ nameof(GlobalInventoryControllerGUI)+" Found");
-                    }
-                    else
-                    {
-                        _instance = resourcesFound[0];
-                    }
-                }
-                return _instance;
-            }
-        }
-
         private Inventory _playerInventory;
 
         private List<InventoryContainerGUI> _containerGUIs = new List<InventoryContainerGUI>();

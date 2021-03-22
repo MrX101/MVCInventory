@@ -73,8 +73,8 @@ namespace Game.Inventory
         [SerializeField]public ItemClasses ItemClass = ItemClasses.Baseclass;
         [SerializeReference]public IItem Item;
         [SerializeField]public float ChanceToSpawn = 100f;
-        [SerializeField]public int minStackSize = 1;
-        [SerializeField]public int maxStackSize = 1;
+        [SerializeField]public int amountToCreate_Min = 1;
+        [SerializeField]public int amountToCreate_Max = 1;
 
         public ItemSettings()
         {
@@ -109,25 +109,25 @@ namespace Game.Inventory
                 Item.MaxStackSize = Item.CurrentStackSize;
             }
 
-            if (!IsMinStackSizeValid())
+            if (!IsAmountToCreate_MinValid())
             {
-                minStackSize = 1;
+                amountToCreate_Min = 1;
             }
 
-            if (!IsMaxStackSizeValid())
+            if (!IsAmountToCreate_MaxValid())
             {
-                maxStackSize = minStackSize;
+                amountToCreate_Max = amountToCreate_Min;
             }
         }
 
-        private bool IsMaxStackSizeValid()
+        private bool IsAmountToCreate_MaxValid()
         {
-            return maxStackSize > 0 && maxStackSize >= minStackSize;
+            return amountToCreate_Max > 0 && amountToCreate_Max >= amountToCreate_Min;
         }
 
-        private bool IsMinStackSizeValid()
+        private bool IsAmountToCreate_MinValid()
         {
-            return minStackSize > 0;
+            return amountToCreate_Min > 0;
         }
 
         public bool IsValid()
@@ -136,8 +136,8 @@ namespace Game.Inventory
                     ChanceToSpawn > 0f && ChanceToSpawn <= 100f &&
                     Item.MaxStackSize > 0 && Item.CurrentStackSize > 0 &&
                     Item.MaxStackSize >= Item.CurrentStackSize &&
-                    minStackSize > 0 && minStackSize <= Item.MaxStackSize &&
-                    maxStackSize > 0 && maxStackSize <= Item.MaxStackSize);
+                    amountToCreate_Min > 0 && amountToCreate_Min <= Item.MaxStackSize &&
+                    amountToCreate_Max > 0 && amountToCreate_Max <= Item.MaxStackSize);
         }
 
         private bool IsChanceToSpawnValid()
@@ -161,13 +161,35 @@ namespace Game.Inventory
             return ChanceToSpawn >= UnityEngine.Random.Range(0f, 100f);
         }
 
-        public void RollStackSize()
+        public static List<IItem> RollAmountToCreate(ItemSettings settings)
         {
-            if (Item.CurrentStackSize < Item.MaxStackSize)
+            var list = new List<IItem>();
+            
+            //Original Item is duplicated, to ensure that the current/max stack values
+            //of the ItemSettings in GlobalInventoryControllerGUI aren't changed unintentionally during runtime.
+            var duplicateItem = settings.Item.CreateEmptyDuplicate();
+            duplicateItem.CurrentStackSize = settings.Item.CurrentStackSize;
+            list.Add(duplicateItem);
+            
+            var amountToCreate = UnityEngine.Random.Range(settings.amountToCreate_Min, settings.amountToCreate_Max+1);
+            var stacksRemaining = duplicateItem.CurrentStackSize * amountToCreate;
+            IItem currentItem = duplicateItem;
+            while (stacksRemaining > 0)
             {
-                Item.CurrentStackSize = UnityEngine.Random.Range(minStackSize, maxStackSize+1);
+                if (stacksRemaining > currentItem.MaxStackSize)
+                {
+                    currentItem.CurrentStackSize = currentItem.MaxStackSize;
+                    currentItem = duplicateItem.CreateEmptyDuplicate();
+                    list.Add(currentItem);
+                    stacksRemaining -= duplicateItem.MaxStackSize;
+                }
+                else
+                {
+                    currentItem.CurrentStackSize = stacksRemaining;
+                    stacksRemaining = 0;
+                }
             }
-            Item.CurrentStackSize = Mathf.Clamp(Item.CurrentStackSize,minStackSize,Item.MaxStackSize);
+            return list;
         }
 
         //Warning Will need to update this as new classes that subscribe to IItem get added.

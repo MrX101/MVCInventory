@@ -9,31 +9,6 @@ namespace Game.Inventory
     [CreateAssetMenu(fileName = "WorldItemsManager", menuName = "Create ItemsManager", order = 0)]
     public class ItemsManager : ScriptableObject
     {
-        public static ItemsManager _instance;
-        
-        public static ItemsManager Instance
-        {
-            get
-            {
-                if (_instance == null)
-                {
-                    var itemsFound = Resources.FindObjectsOfTypeAll<ItemsManager>();
-                    if (itemsFound.Length == 0)
-                    {
-                        Debug.Log(nameof(ItemsManager)+" Not Found");
-                    }
-                    else if (itemsFound.Length > 1)
-                    {
-                        Debug.Log("Too many "+ nameof(ItemsManager)+" Found");
-                    }
-                    else
-                    {
-                        _instance = itemsFound[0];
-                    }
-                }
-                return _instance;
-            }
-        }
         
         [SerializeField]private WorldItem _worldItemPrefab;
 

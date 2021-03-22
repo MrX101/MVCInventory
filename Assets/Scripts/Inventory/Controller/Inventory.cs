@@ -9,11 +9,18 @@ namespace Game.Inventory
     {
         private List<ContainerSettings> containerSettings = new List<ContainerSettings>();
         private Dictionary<string, DataInventoryContainer> _containers = new Dictionary<string, DataInventoryContainer>();
-
+        private ItemsManager _itemsManager;
+        
         public List<ContainerSettings> ContainerSettings
         {
             get => containerSettings;
             set => containerSettings = value;
+        }
+
+        public ItemsManager ItemManager
+        {
+            get => _itemsManager;
+            set => _itemsManager = value;
         }
 
         public void DebugShowAllItems()
@@ -52,13 +59,18 @@ namespace Game.Inventory
                     }
                     
                     if (!itemToCreate.RollSpawnChance()) { continue; }
-                    itemToCreate.RollStackSize();
-                    
-                    if (!StoreItem(ref itemToCreate.Item, settings.Identifier ,out var slotIds))
+                    var itemsToCreate = ItemSettings.RollAmountToCreate(itemToCreate);
+
+                    for (int i = 0; i < itemsToCreate.Count; i++)
                     {
-                        Debug.Log("Unable to add item '" + itemToCreate.Item.Name + 
-                                  "' in container: " + settings.Identifier);
+                        var item = itemsToCreate[i];
+                        if (!StoreItem(ref item, settings.Identifier ,out var slotIds))
+                        {
+                            Debug.Log("Unable to add item '" + itemToCreate.Item.Name + 
+                                      "' in container: " + settings.Identifier);
+                        }
                     }
+                    
                 }
             }
         }
@@ -88,7 +100,7 @@ namespace Game.Inventory
             }
             if (container.HasItemsOfUniqueId(ammoId))
             {
-                amount = container.GetSpecificAmount_SpecificItem_FromAllSlots(ammoId, amount, out var item);
+                amount = container.GetSpecificAmountOfItem(ammoId, amount, out var item);
                 item.DeleteSelf();
             }
             return amount;
@@ -109,7 +121,7 @@ namespace Game.Inventory
         {
             if (TakeItem(out var item, request))
             {
-                ItemsManager.Instance.CreateWorldItem(item, position, rotation);
+                _itemsManager.CreateWorldItem(item, position, rotation);
                 return true;
             }
             return false;
@@ -352,7 +364,7 @@ namespace Game.Inventory
         }
 
 
-        ///Swaps slots of items, still works if 1 is empty
+        ///Swaps slots of items, still works if toSlot is empty
         public bool SwapItem(SlotIdentifier fromRequest, SlotIdentifier toRequest, out List<SlotInfo> responseSlotsInfo)
         {
             responseSlotsInfo = new List<SlotInfo>();
@@ -360,10 +372,16 @@ namespace Game.Inventory
             {
                 var fromContainer = _containers[fromRequest.ContainerId];
                 var toContainer = _containers[toRequest.ContainerId];
+                
                 if (IsRequestSlotEmpty(fromRequest))
                 {
                     //don't need to check for empty slot in toContainer, since we can still swap slots in that situation.
-                    responseSlotsInfo = null;
+                    return false;
+                }
+                
+                var fromItemType = fromContainer.GetItemTypeOfItemInSlot(fromRequest.SlotIndex);
+                if (!toContainer.CanStoreItemType(fromItemType))
+                {
                     return false;
                 }
 
@@ -374,15 +392,37 @@ namespace Game.Inventory
                     responseSlotsInfo.Add(toItemInfo);
                     return true;
                 }
-                else if (!IsRequestSlotEmpty(toRequest) && CanSlotsStack(fromRequest, toRequest))
+                else if (!IsRequestSlotEmpty(toRequest) && CanItemsStack(fromRequest, toRequest))
                 {
                     InternalStackInSpecificSlot(fromRequest, toRequest, ref fromContainer, ref toContainer, out var fromItemInfo, out var toItemInfo);
                     responseSlotsInfo.Add(fromItemInfo);
                     responseSlotsInfo.Add(toItemInfo);
                     return true;
                 }
+                else if(!fromContainer.CanStoreItemType(
+                    toContainer.GetItemTypeOfItemInSlot(toRequest.SlotIndex)))
+                {
+                    //Can place fromItem in toSlot, but cannot place toItem in fromSlot
+                    //As such place it in inventory if possible, else cancel.
+                    toContainer.GetItemSlotInfo(toRequest.SlotIndex, out var itemInfo);
+                    foreach (var KVP in _containers)
+                    {
+                        if (KVP.Value.CanStoreItem(itemInfo.Item, out var slotIndex))
+                        {
+                            InternalMoveItem(toRequest, new SlotIdentifier(KVP.Value.ContainerId, slotIndex), 
+                                out var fromItemInfo, out var toItemInfo);
+                            InternalMoveItem(fromRequest, toRequest, 
+                                out var fromItemInfo2, out var toItemInfo2);
+                            responseSlotsInfo.Add(toItemInfo);
+                            responseSlotsInfo.Add(fromItemInfo2);
+                            responseSlotsInfo.Add(toItemInfo2);
+                            return true;
+                        }
+                    }
+                }
                 else
                 {
+                    
                     InternalSwap(fromRequest, toRequest, ref fromContainer, ref toContainer, out var fromItemInfo, out var toItemInfo);
                     responseSlotsInfo.Add(fromItemInfo);
                     responseSlotsInfo.Add(toItemInfo);
@@ -447,6 +487,24 @@ namespace Game.Inventory
         }
         
         private void InternalMoveItem(SlotIdentifier fromRequest, SlotIdentifier toRequest,
+            out SlotInfo FromItemInfo, out SlotInfo ToItemInfo)
+        {
+            var fromContainer = GetContainer(fromRequest.ContainerId);
+            var toContainer = GetContainer(toRequest.ContainerId);
+            fromContainer.TakeItem(fromRequest.SlotIndex, out var fromItem);
+            toContainer.StoreItem(ref fromItem, toRequest.SlotIndex);
+            fromContainer.GetItemSlotInfo(fromRequest.SlotIndex, out SlotInfo fromItemInfo );
+            toContainer.GetItemSlotInfo(toRequest.SlotIndex, out SlotInfo toItemInfo );
+            FromItemInfo = fromItemInfo;
+            ToItemInfo = toItemInfo;
+        }
+
+        private DataInventoryContainer GetContainer(string containerId)
+        {
+            return _containers[containerId];
+        }
+        
+        private void InternalMoveItem(SlotIdentifier fromRequest, SlotIdentifier toRequest,
             ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer,
             out SlotInfo FromItemInfo, out SlotInfo ToItemInfo)
         {
@@ -458,7 +516,7 @@ namespace Game.Inventory
             ToItemInfo = toItemInfo;
         }
 
-        private bool CanSlotsStack(SlotIdentifier fromRequest, SlotIdentifier toRequest)
+        private bool CanItemsStack(SlotIdentifier fromRequest, SlotIdentifier toRequest)
         {
             return _containers[fromRequest.ContainerId].GetItemIdOfSlot(fromRequest.SlotIndex) 
                    == _containers[toRequest.ContainerId].GetItemIdOfSlot(toRequest.SlotIndex);

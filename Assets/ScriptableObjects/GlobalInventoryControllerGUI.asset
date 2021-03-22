@@ -21,60 +21,54 @@ MonoBehaviour:
       Item:
         id: 0
       ChanceToSpawn: 100
-      minStackSize: 1
-      maxStackSize: 1
+      amountToCreate_Min: 1
+      amountToCreate_Max: 1
     - ItemClass: 0
       Item:
         id: 1
       ChanceToSpawn: 100
-      minStackSize: 1
-      maxStackSize: 1
+      amountToCreate_Min: 1
+      amountToCreate_Max: 1
     - ItemClass: 0
       Item:
         id: 2
       ChanceToSpawn: 100
-      minStackSize: 1
-      maxStackSize: 1
+      amountToCreate_Min: 1
+      amountToCreate_Max: 1
     - ItemClass: 0
       Item:
         id: 3
       ChanceToSpawn: 100
-      minStackSize: 1
-      maxStackSize: 1
-    AllowedItemTypes: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
-  - Identifier: playerInventory2
-    NumberOfSlots: 5
-    Type: 1
-    ItemsToCreate:
+      amountToCreate_Min: 1
+      amountToCreate_Max: 1
     - ItemClass: 0
       Item:
         id: 4
       ChanceToSpawn: 100
-      minStackSize: 1
-      maxStackSize: 1
+      amountToCreate_Min: 1
+      amountToCreate_Max: 1
     - ItemClass: 0
       Item:
         id: 5
       ChanceToSpawn: 100
-      minStackSize: 1
-      maxStackSize: 1
-    - ItemClass: 0
-      Item:
-        id: 6
-      ChanceToSpawn: 100
-      minStackSize: 1
-      maxStackSize: 1
-    AllowedItemTypes: 080000000900000007000000
-  - Identifier: chest
-    NumberOfSlots: 1
+      amountToCreate_Min: 1
+      amountToCreate_Max: 1
+    AllowedItemTypes: 000000000100000002000000030000000400000005000000060000000700000008000000090000000a000000
+  - Identifier: playerInventory2
+    NumberOfSlots: 4
     Type: 1
     ItemsToCreate:
     - ItemClass: 0
       Item:
-        id: 7
+        id: 6
       ChanceToSpawn: 100
-      minStackSize: 1
-      maxStackSize: 1
+      amountToCreate_Min: 3
+      amountToCreate_Max: 3
+    AllowedItemTypes: 080000000900000007000000
+  - Identifier: chest
+    NumberOfSlots: 1
+    Type: 1
+    ItemsToCreate: []
     AllowedItemTypes: 03000000
   - Identifier: head
     NumberOfSlots: 1
@@ -92,22 +86,10 @@ MonoBehaviour:
     ItemsToCreate:
     - ItemClass: 0
       Item:
-        id: 8
-      ChanceToSpawn: 0
-      minStackSize: 1
-      maxStackSize: 1
-    - ItemClass: 0
-      Item:
-        id: 9
-      ChanceToSpawn: 0
-      minStackSize: 1
-      maxStackSize: 1
-    - ItemClass: 0
-      Item:
-        id: 10
-      ChanceToSpawn: 0
-      minStackSize: 1
-      maxStackSize: 1
+        id: 7
+      ChanceToSpawn: 100
+      amountToCreate_Min: 1
+      amountToCreate_Max: 1
     AllowedItemTypes: 04000000
   _inventoryItemPrefab: {fileID: 6539912704127328978, guid: 56071991c0c50f5448ab9e2946b357ab,
     type: 3}
@@ -120,110 +102,80 @@ MonoBehaviour:
     00000000:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: 
-        _sprite: {fileID: 0}
-        _description: 
-        _uniqueId: 31139
-        _itemType: 0
+        _name: leather chest
+        _sprite: {fileID: 21300000, guid: 53afd1d31f3bb09428ff053cd1164801, type: 3}
+        _description: leather chest desc
+        _uniqueId: 9e397
+        _itemType: 3
         _maxStackSize: 1
         _currentStackSize: 1
     00000001:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: 
-        _sprite: {fileID: 0}
-        _description: 
+        _name: Cloth Chest
+        _sprite: {fileID: 21300000, guid: 60d20a83d3e69794d8611153b8f207b1, type: 3}
+        _description: Cloth Chest desc
         _uniqueId: 3994a
-        _itemType: 0
+        _itemType: 3
         _maxStackSize: 1
         _currentStackSize: 1
     00000002:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: asdas
-        _sprite: {fileID: 0}
-        _description: 
+        _name: plate chest
+        _sprite: {fileID: 21300000, guid: e9a6166312bce89409807141e86966b0, type: 3}
+        _description: plate chest desc
         _uniqueId: fdc68
-        _itemType: 0
+        _itemType: 3
         _maxStackSize: 1
         _currentStackSize: 1
     00000003:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: asdsd
-        _sprite: {fileID: 0}
-        _description: sdasd
+        _name: cloth helm
+        _sprite: {fileID: 21300000, guid: 19df7560ad1234d46957a3352780e99a, type: 3}
+        _description: cloth helm desc
         _uniqueId: 77cac
-        _itemType: 0
+        _itemType: 6
         _maxStackSize: 1
         _currentStackSize: 1
     00000004:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: 
-        _sprite: {fileID: 0}
-        _description: 
-        _uniqueId: a920f
-        _itemType: 0
+        _name: leather helm
+        _sprite: {fileID: 21300000, guid: 5b274d1a2d222c64da1b17743a731e09, type: 3}
+        _description: leather helm desc
+        _uniqueId: 0e07e
+        _itemType: 6
         _maxStackSize: 1
         _currentStackSize: 1
     00000005:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: 
-        _sprite: {fileID: 0}
-        _description: 
-        _uniqueId: 4e652
-        _itemType: 0
+        _name: plate helm
+        _sprite: {fileID: 21300000, guid: 97bed73870dd5964d892b17ff23d5261, type: 3}
+        _description: plate helm desc
+        _uniqueId: ccb4f
+        _itemType: 6
         _maxStackSize: 1
         _currentStackSize: 1
     00000006:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: 
-        _sprite: {fileID: 0}
-        _description: 
-        _uniqueId: e2c74
-        _itemType: 0
-        _maxStackSize: 1
-        _currentStackSize: 1
+        _name: Coin
+        _sprite: {fileID: 21300000, guid: d96c9d812c6694ad9a944c82995b73f0, type: 3}
+        _description: coin disc
+        _uniqueId: 1a0af
+        _itemType: 9
+        _maxStackSize: 500
+        _currentStackSize: 500
     00000007:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
-        _name: 
-        _sprite: {fileID: 0}
-        _description: 
-        _uniqueId: 3eb46
-        _itemType: 0
-        _maxStackSize: 1
-        _currentStackSize: 1
-    00000008:
-      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
-      data:
-        _name: 
-        _sprite: {fileID: 0}
-        _description: 
-        _uniqueId: fee56
-        _itemType: 0
-        _maxStackSize: 1
-        _currentStackSize: 1
-    00000009:
-      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
-      data:
-        _name: 
-        _sprite: {fileID: 0}
-        _description: 
-        _uniqueId: 89ca5
-        _itemType: 0
-        _maxStackSize: 1
-        _currentStackSize: 1
-    0000000A:
-      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
-      data:
-        _name: 
-        _sprite: {fileID: 0}
-        _description: 
-        _uniqueId: e27d8
-        _itemType: 0
+        _name: leather gloves
+        _sprite: {fileID: 21300000, guid: ce0c551385d2a094da801fc1d61b389d, type: 3}
+        _description: leather gloves desc
+        _uniqueId: 375d9
+        _itemType: 4
         _maxStackSize: 1
         _currentStackSize: 1

@@ -9,6 +9,8 @@ namespace Game.Inventory.GUI
 {
     public class InventoryItemGUI : MonoBehaviour,IDropHandler ,IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler
     {
+        [SerializeField]protected GlobalInventoryControllerGUI _inventoryControllerGUI;
+        
         private SlotIdentifier _slotId;
 
         private RectTransform _rectTransform;
@@ -45,11 +47,19 @@ namespace Game.Inventory.GUI
 
         public void OnDrag(PointerEventData eventData)
         {
+            if (eventData.button != PointerEventData.InputButton.Left)
+            {
+                return;
+            }
             _rectTransform.anchoredPosition += eventData.delta / _canvasScaler.scaleFactor;   
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
+            if (eventData.button != PointerEventData.InputButton.Left)
+            {
+                return;
+            }
             if (_canvasScaler == null)
             {
                 _canvasScaler = GetComponentInParent<CanvasScaler>();
@@ -113,7 +123,7 @@ namespace Game.Inventory.GUI
 
         private void EquipInFirstAvailable()
         {
-            GlobalInventoryControllerGUI.Instance.EquipItemInAnyAvailableSlot(_slotId);
+            _inventoryControllerGUI.EquipItemInAnyAvailableSlot(_slotId);
         }
 
         public void PlaceInSlot(RectTransform rect, SlotIdentifier slotId)
@@ -153,7 +163,7 @@ namespace Game.Inventory.GUI
         public void OnDrop(PointerEventData eventData)
         {
             OnDropEvent?.Invoke(this);
-            GlobalInventoryControllerGUI.Instance.ItemDroppedIn(_slotId);
+            _inventoryControllerGUI.ItemDroppedIn(_slotId);
         }
     }
 }

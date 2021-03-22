@@ -7,6 +7,7 @@ namespace Game.Inventory.GUI
 {
     public class InventorySlot_GUI : MonoBehaviour, IDropHandler
     {
+        [SerializeField]protected GlobalInventoryControllerGUI _inventoryControllerGUI;
         protected InventoryItemGUI _item;
         protected SlotIdentifier _slotId;
         protected Action<SlotIdentifier> OnItemDroppedEvent;
@@ -14,28 +15,13 @@ namespace Game.Inventory.GUI
 
         protected RectTransform _rectTransform;
         
-        protected RawImage _backgroundImage;
-        protected RawImage _foregroundImage;
-        
-        protected readonly Color _transparent = new Color(1f, 1f, 1f, 0f);
-        [Header("Icon Settings - while no Item")]
-        [SerializeField]protected Color _iconColor = Color.white;
-        [SerializeField]protected Texture _icon;
+        protected Image _backgroundImage;
 
         protected void Awake()
         {
             _rectTransform = GetComponent<RectTransform>();
-            _backgroundImage = GetComponent<RawImage>();
-            _foregroundImage = transform.GetChild(0).GetComponent<RawImage>();
-            UpdateIcon();
-        }
-
-        private void Start()
-        {
-            if (_foregroundImage.texture == null)
-            {
-                _foregroundImage.color = _transparent;
-            }
+            _backgroundImage = GetComponent<Image>();
+            
         }
 
         public SlotIdentifier SlotId
@@ -46,12 +32,12 @@ namespace Game.Inventory.GUI
 
         private void OnEnable()
         {
-            OnItemDroppedEvent += GlobalInventoryControllerGUI.Instance.ItemDroppedIn;
+            OnItemDroppedEvent += _inventoryControllerGUI.ItemDroppedIn;
         }
 
         private void OnDisable()
         {
-            OnItemDroppedEvent -= GlobalInventoryControllerGUI.Instance.ItemDroppedIn;
+            OnItemDroppedEvent -= _inventoryControllerGUI.ItemDroppedIn;
         }
 
         public void OnDrop(PointerEventData eventData)
@@ -79,9 +65,9 @@ namespace Game.Inventory.GUI
 
         protected void CreateItem()
         {
-            _item = GlobalInventoryControllerGUI.Instance.GetGUIItem();
+            _item = _inventoryControllerGUI.GetGUIItem();
             _item.transform.root.SetParent(_rectTransform.parent); 
-            _item.OnBeginDragEvent += GlobalInventoryControllerGUI.Instance.SetAsDragged;
+            _item.OnBeginDragEvent += _inventoryControllerGUI.SetAsDragged;
         }
 
         protected void Internal_UpdateItemInfoAndLocation(SlotIdentifier slotId,  ItemInfo itemInfo)
@@ -91,26 +77,13 @@ namespace Game.Inventory.GUI
                 if (_item != null) { DestroyItem(); }
                 _item = null;
                 OnItemRemovedEvent?.Invoke(_slotId);
-                UpdateIcon();
                 return;
             }
             if (_item == null) { CreateItem(); }
             _item.SetItemInfo(itemInfo);
             _item.PlaceInSlot(_rectTransform, slotId);
-            SetIcon(null, _transparent);
         }
-
-        private void UpdateIcon()
-        {
-            if (_icon == null)
-            {
-                SetIcon(null, _transparent);
-            }
-            else
-            {
-                SetIcon(_icon, _iconColor);
-            }
-        }
+        
 
         protected void DestroyItem()
         {
@@ -118,12 +91,6 @@ namespace Game.Inventory.GUI
             _item = null;
         }
 
-        public void SetIcon(Texture texture, Color color)
-        {
-            _foregroundImage.texture = texture;
-            _foregroundImage.color = color;
-        }
-        
         public void ReturnItemToSlot()
         {
             _item.ReturnToSlot();
@@ -135,15 +102,6 @@ namespace Game.Inventory.GUI
             _item = null;
             OnItemRemovedEvent?.Invoke(_slotId);
             return temp;
-        }
-
-        private void OnValidate()
-        {
-            if (_foregroundImage == null)
-            {
-                _foregroundImage = transform.GetChild(0).GetComponent<RawImage>();
-            }
-            UpdateIcon();
         }
     }
 }
