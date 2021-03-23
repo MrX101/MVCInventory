@@ -90,9 +90,10 @@ namespace Game.Inventory
             }
         }
 
-        public void StackItemInSlot(ref IItem itemRef, int slotIndex)
+        //Returns true is the item completely stacked, returns false if still some stacks left.
+        public bool StackItemInSlot(ref IItem itemRef, int slotIndex)
         {
-            _inventorySlots[slotIndex].StackItem(ref itemRef);
+            return _inventorySlots[slotIndex].StackItem(ref itemRef);
         }
         
         /// Check that Slot Exists First

@@ -95,7 +95,7 @@ namespace Game.Inventory
         public bool StackItem( ref IItem itemRef)
         {
             _item.CurrentStackSize += itemRef.CurrentStackSize;
-            if (_item.CurrentStackSize < _item.MaxStackSize)
+            if (_item.CurrentStackSize > _item.MaxStackSize)
             {
                 itemRef.CurrentStackSize = _item.CurrentStackSize - _item.MaxStackSize;
                 _item.CurrentStackSize = itemRef.MaxStackSize;

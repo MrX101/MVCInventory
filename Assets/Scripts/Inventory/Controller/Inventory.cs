@@ -64,7 +64,7 @@ namespace Game.Inventory
                     for (int i = 0; i < itemsToCreate.Count; i++)
                     {
                         var item = itemsToCreate[i];
-                        if (!StoreItem(ref item, settings.Identifier ,out var slotIds))
+                        if (!StoreItem(ref item, settings.Identifier ,out var slotIds, false))
                         {
                             Debug.Log("Unable to add item '" + itemToCreate.Item.Name + 
                                       "' in container: " + settings.Identifier);
@@ -220,7 +220,7 @@ namespace Game.Inventory
             resultSlotIds = new List<SlotInfo>();
             if (!IsRequestValid(fromSlotId)) { return false; }
             if (IsRequestSlotEmpty(fromSlotId)) { return false; }
-
+            
             var fromContainer = _containers[fromSlotId.ContainerId];
             var fromItemType = fromContainer.GetItemTypeOfItemInSlot(fromSlotId.SlotIndex);
             
@@ -244,7 +244,6 @@ namespace Game.Inventory
                     else if (toContainer.CanStoreItemType(fromItemType))
                     {
                         InternalSwap(fromSlotId, new SlotIdentifier(toContainer.ContainerId, 0),
-                            ref fromContainer, ref toContainer, 
                             out var fromSlotInfo, out var toSlotInfo );
                         resultSlotIds.Add(fromSlotInfo);
                         resultSlotIds.Add(toSlotInfo);
@@ -277,7 +276,8 @@ namespace Game.Inventory
         }
         
         ///Stores Item in first available slot of specified container
-        public bool StoreItem(ref IItem item, string containerId , out List<SlotIdentifier> resultSlotIds)
+        public bool StoreItem(ref IItem item, string containerId , 
+            out List<SlotIdentifier> resultSlotIds, bool allowStacking = true)
         {
             resultSlotIds = new List<SlotIdentifier>();
             if (item == null) {  return false; }
@@ -287,7 +287,7 @@ namespace Game.Inventory
 
             if (!container.CanStoreItemType(item.GetItemType())) { return false; }
             
-            if (container.HasItemsOfUniqueId(item.UniqueId))
+            if (allowStacking && container.HasItemsOfUniqueId(item.UniqueId))
             {
                 if (container.StackItemInExistingStacks(ref item, out var info))
                 {
@@ -368,7 +368,7 @@ namespace Game.Inventory
         public bool SwapItem(SlotIdentifier fromRequest, SlotIdentifier toRequest, out List<SlotInfo> responseSlotsInfo)
         {
             responseSlotsInfo = new List<SlotInfo>();
-            if (IsRequestValid(fromRequest) && IsRequestValid(toRequest))
+            if (IsRequestValid(fromRequest) && IsRequestValid(toRequest) && !AreSameSlotId(toRequest, fromRequest))
             {
                 var fromContainer = _containers[fromRequest.ContainerId];
                 var toContainer = _containers[toRequest.ContainerId];
@@ -394,7 +394,7 @@ namespace Game.Inventory
                 }
                 else if (!IsRequestSlotEmpty(toRequest) && CanItemsStack(fromRequest, toRequest))
                 {
-                    InternalStackInSpecificSlot(fromRequest, toRequest, ref fromContainer, ref toContainer, out var fromItemInfo, out var toItemInfo);
+                    InternalStackInSpecificSlot(fromRequest, toRequest, out var fromItemInfo, out var toItemInfo);
                     responseSlotsInfo.Add(fromItemInfo);
                     responseSlotsInfo.Add(toItemInfo);
                     return true;
@@ -423,7 +423,7 @@ namespace Game.Inventory
                 else
                 {
                     
-                    InternalSwap(fromRequest, toRequest, ref fromContainer, ref toContainer, out var fromItemInfo, out var toItemInfo);
+                    InternalSwap(fromRequest, toRequest, out var fromItemInfo, out var toItemInfo);
                     responseSlotsInfo.Add(fromItemInfo);
                     responseSlotsInfo.Add(toItemInfo);
                     return true;
@@ -458,13 +458,16 @@ namespace Game.Inventory
             return false;
         }
 
-        private void InternalStackInSpecificSlot(SlotIdentifier fromRequest, SlotIdentifier toRequest,
-            ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer,
+        private void InternalStackInSpecificSlot(SlotIdentifier fromRequest, SlotIdentifier toRequest, 
             out SlotInfo FromItemInfo, out SlotInfo ToItemInfo)
         {
+            var fromContainer = GetContainer(fromRequest.ContainerId);
+            var toContainer = GetContainer(toRequest.ContainerId);
             fromContainer.TakeItem(fromRequest.SlotIndex, out var fromItem2);
-            toContainer.StackItemInSlot(ref fromItem2, toRequest.SlotIndex);
-            fromContainer.StoreItem(ref fromItem2, fromRequest.SlotIndex);
+            if (!toContainer.StackItemInSlot(ref fromItem2, toRequest.SlotIndex))
+            {
+                fromContainer.StoreItem(ref fromItem2, fromRequest.SlotIndex);
+            }
             fromContainer.GetItemSlotInfo(fromRequest.SlotIndex, out SlotInfo fromItemInfo );
             toContainer.GetItemSlotInfo(toRequest.SlotIndex, out SlotInfo toItemInfo );
             FromItemInfo = fromItemInfo;
@@ -473,9 +476,10 @@ namespace Game.Inventory
         }
 
         private void InternalSwap(SlotIdentifier fromRequest, SlotIdentifier toRequest,
-            ref DataInventoryContainer fromContainer, ref DataInventoryContainer toContainer,
             out SlotInfo FromSlotInfo, out SlotInfo ToSlotInfo)
         {
+            var fromContainer = GetContainer(fromRequest.ContainerId);
+            var toContainer = GetContainer(toRequest.ContainerId);
             fromContainer.TakeItem(fromRequest.SlotIndex, out var fromItem);
             toContainer.TakeItem(toRequest.SlotIndex, out var toItem);
             fromContainer.StoreItem(ref toItem, fromRequest.SlotIndex);
@@ -545,6 +549,12 @@ namespace Game.Inventory
         }
 
         // Confirms the ContainerId and slotIndex exist, nothing more.
+
+        private bool AreSameSlotId(SlotIdentifier toSlotId, SlotIdentifier fromSlotId)
+        {
+            return toSlotId.ContainerId == fromSlotId.ContainerId 
+                   && toSlotId.SlotIndex == fromSlotId.SlotIndex;
+        }
 
         private bool IsRequestValid(SlotIdentifier slotIdentifier)
         {

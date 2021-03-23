@@ -62,8 +62,14 @@ MonoBehaviour:
       Item:
         id: 6
       ChanceToSpawn: 100
-      amountToCreate_Min: 3
-      amountToCreate_Max: 3
+      amountToCreate_Min: 1
+      amountToCreate_Max: 1
+    - ItemClass: 0
+      Item:
+        id: 7
+      ChanceToSpawn: 100
+      amountToCreate_Min: 1
+      amountToCreate_Max: 1
     AllowedItemTypes: 080000000900000007000000
   - Identifier: chest
     NumberOfSlots: 1
@@ -86,7 +92,7 @@ MonoBehaviour:
     ItemsToCreate:
     - ItemClass: 0
       Item:
-        id: 7
+        id: 8
       ChanceToSpawn: 100
       amountToCreate_Min: 1
       amountToCreate_Max: 1
@@ -168,8 +174,18 @@ MonoBehaviour:
         _uniqueId: 1a0af
         _itemType: 9
         _maxStackSize: 500
-        _currentStackSize: 500
+        _currentStackSize: 250
     00000007:
+      type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
+      data:
+        _name: Coin
+        _sprite: {fileID: 21300000, guid: d96c9d812c6694ad9a944c82995b73f0, type: 3}
+        _description: coin disc
+        _uniqueId: 1a0af
+        _itemType: 9
+        _maxStackSize: 500
+        _currentStackSize: 119
+    00000008:
       type: {class: BaseItem, ns: Game.Inventory, asm: Inventory}
       data:
         _name: leather gloves

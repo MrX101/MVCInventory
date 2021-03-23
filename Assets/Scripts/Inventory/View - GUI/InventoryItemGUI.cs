@@ -100,17 +100,17 @@ namespace Game.Inventory.GUI
                 if (_doubleClickCooldown.HasStarted() && !_doubleClickCooldown.HasFinished(true))
                 {
                     EquipInFirstAvailable();
-                    Debug.Log("Double Click");
+                    //Debug.Log("Double Click");
                 }
                 else
                 {
                     _doubleClickCooldown.StartCountDown();
-                    Debug.Log("Left Click");
+                    //Debug.Log("Left Click");
                 }
             }
             else if (eventData.button == PointerEventData.InputButton.Right)
             {
-                Debug.Log("Right Click");
+                //Debug.Log("Right Click");
             }
             OnClickedEvent?.Invoke(this);
         }
