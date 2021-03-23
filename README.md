@@ -1,5 +1,6 @@
 
-![Short Gif Of Inventory System](https://imgur.com/a/d4Vpix6)
+Short Gif Of Inventory System
+<img src="https://imgur.com/a/d4Vpix6">
 
 ![](https://i.imgur.com/P97sI7w.png)
 
@@ -43,7 +44,7 @@ OnValidate - Called when values are changed in the Unity Editor.
 OnDisable - Called when the object is disabled.
 Also note that this is using the builtin Unity Test framework to allow Unit testing via NUnit. Though the Tests themselves are run in the Unity Editor via GUI.
 ![](https://i.imgur.com/fNA7rL6.png)
-![](https://i.imgur.com/XpxtIxy.png | height=500)
+<img src="https://i.imgur.com/XpxtIxy.png" width="400" height="500">
 
 As can be seen in image  above. The code for the inventory is separated into the typical MVC style of Model(Data), View(GUI) and Controller.
 
