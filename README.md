@@ -6,6 +6,20 @@
 This is an example project to show my coding skill. It is an inventory system coded in the MVC(Model, View, Controller) coding architecture. To ensure that the functionality is not effected by the Graphical User interface and as such any number of future changes to the GUI could be done and the functionality would not be effected.
 
 
+Currently missing features are:
+* Adding More Unit Tests
+* Add tooltips
+* Make the inventory functions return a response based enum, instead of success/fail bool.To indicate why the operation failed.
+* Adding Universal Item Manager that stores all items and other inspectors simply show the item list with a searchbox.
+* World items dropping/pickups. ~Partially implemented.
+* Destroying Items in GUI
+* Make a better inspector for setting inventories settings.
+
+
+Major Missing Features:
+* Add Network Support
+* Add Async requests/responses.
+* Add Database Support
 
 **bold**If you want to run the local yourself but don’t have much/any Unity experience:**bold**
 
@@ -28,8 +42,8 @@ Update - Called once everyframe after being created/enabled.
 OnValidate - Called when values are changed in the Unity Editor.
 OnDisable - Called when the object is disabled.
 Also note that this is using the builtin Unity Test framework to allow Unit testing via NUnit. Though the Tests themselves are run in the Unity Editor via GUI.
-![](https://i.imgur.com/M4hlObB.png)
-![](https://i.imgur.com/XpxtIxy.png)
+![](https://i.imgur.com/fNA7rL6.png)
+![](https://i.imgur.com/XpxtIxy.png | height=500)
 
 As can be seen in image  above. The code for the inventory is separated into the typical MVC style of Model(Data), View(GUI) and Controller.
 
@@ -53,18 +67,3 @@ The GlobalInventoryControllerGUI is what directly interacts with the Inventory c
 The GUI InventorySlots and Items are using the Unity Interfaces for handling pointer clicks/movements/dragging (IDropHandler ,IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler). These interfaces are very simple and only contain a single method, that will be called when their events occur. Though they unfortunately don’t have the best hitbox detection with dropping items into the itemslots. So I might replace them in future with a version that can calculate the closest slot where the dragging stopped.
 
 If you try to use any of the code, please make sure you understand how Unity’s assembly definitions work, as you won’t be able to simply use namepsaces without first declaring them in the assembly definition files(which are required when using Unit Tests in Unity) in the Unity Editor.
-
-Currently missing features are:
-Adding More Unit Tests
-Add tooltips
-Make the inventory functions return a response based enum, instead of success/fail bool.To indicate why the operation failed.
-Adding Universal Item Manager that stores all items and other inspectors simply show the item list with a searchbox.
-World items dropping/pickups. ~Partially implemented.
-Destroying Items in GUI
-Make a better inspector for setting inventories settings.
-
-
-Major Features:
-Add Network Support
-Add Async requests/responses.
-Add Database Support
