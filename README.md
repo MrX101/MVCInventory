@@ -1,8 +1,10 @@
 
-![Gif](https://imgur.com/a/d4Vpix6)
+![Short Gif Of Inventory System](https://imgur.com/a/d4Vpix6)
+
+![](https://i.imgur.com/lKRXgHC.png)
 
 
-https://i.imgur.com/P97sI7w.png
+![](https://i.imgur.com/P97sI7w.png)
 
 This is an example project to show my coding skill. It is an inventory system coded in the MVC(Model, View, Controller) coding architecture. To ensure that the functionality is not effected by the Graphical User interface and as such any number of future changes to the GUI could be done and the functionality would not be effected.
 
@@ -28,14 +30,14 @@ Update - Called once everyframe after being created/enabled.
 OnValidate - Called when values are changed in the Unity Editor.
 OnDisable - Called when the object is disabled.
 Also note that this is using the builtin Unity Test framework to allow Unit testing via NUnit. Though the Tests themselves are run in the Unity Editor via GUI.
-https://i.imgur.com/M4hlObB.png
-https://i.imgur.com/XpxtIxy.png
+![](https://i.imgur.com/M4hlObB.png)
+![](https://i.imgur.com/XpxtIxy.png)
 
 As can be seen in image  above. The code for the inventory is separated into the typical MVC style of Model(Data), View(GUI) and Controller.
 
 The Core components of the Data are the IItem.cs, DataInventoryContainer.cs and DataInventorySlot.cs
 
-https://i.imgur.com/T2BZJsZ.png
+![](https://i.imgur.com/T2BZJsZ.png)
 IItem is simply a basic interface to give us the core functionality of managing items and allow us the flexibility of making anything we might need in future,  into an item. Though for simplicity sake there is currently only the BaseItem inheriting from the IItem interface.
 
 
