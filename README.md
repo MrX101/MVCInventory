@@ -1,25 +1,23 @@
 
 ![Short Gif Of Inventory System](https://imgur.com/a/d4Vpix6)
 
-![](https://i.imgur.com/lKRXgHC.png)
-
-
 ![](https://i.imgur.com/P97sI7w.png)
 
 This is an example project to show my coding skill. It is an inventory system coded in the MVC(Model, View, Controller) coding architecture. To ensure that the functionality is not effected by the Graphical User interface and as such any number of future changes to the GUI could be done and the functionality would not be effected.
 
 
 
-If you want to run the local yourself but don’t have much/any Unity experience:
+**bold**If you want to run the local yourself but don’t have much/any Unity experience:**bold**
+
 Install Unity Hub from https://unity3d.com/get-unity/download
 You will need to make an account, if you don’t have one
 After Installing, open the program, login then find 2019.4.19f in this website https://unity3d.com/get-unity/download/archive and click the UnityHub Button for that version, it should popup asking you to install with UnityHub.
 
 Now back to your git application, after you clone it and download the files, run UnityHub > Go to “Projects” tab > Click “Add” Button in the topright > FInd the location where you cloned the repo > Click Select Folder > Now Double click the new Item that appeared in the “Projects” list to open the repo. It should take a few minutes to generate all the temporary files it needs.
 
+**bold**Basic Documentation**bold**
 
-
-If you are not familiar with Unity, please focus your attention on the Assets/Scripts folder. Those are the scripts I have made.
+**bold**If you are not familiar with Unity, please focus your attention on the Assets/Scripts folder. Those are the scripts I have made.**bold**
 
 Please note that a monobehaviour is basically a GameObject that exists within a scene and calls numerous methods during runtime. 
 
