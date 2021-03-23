@@ -61,7 +61,9 @@ namespace Game.Inventory.GUI
         {
             List<InventorySlot_GUI> existingInvSlots = GetComponentsInChildren<InventorySlot_GUI>().ToList();
             List<InventoryEquipSlot_GUI> existingInvEquipSlots = new List<InventoryEquipSlot_GUI>();
-            for (int i = 0; i < existingInvSlots.Count; i++)
+            
+            //In Reverse order, since we are removing items from the list.
+            for (int i = existingInvSlots.Count-1; i > -1; i--)
             {
                 if (existingInvSlots[i] is InventoryEquipSlot_GUI )
                 {
