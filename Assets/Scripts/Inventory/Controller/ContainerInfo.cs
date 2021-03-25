@@ -60,8 +60,10 @@ namespace Game.Inventory
         public int MaxStackSize;
         public int CurrentStackSize;
         public ItemType ItemType;
-
-        public ItemInfo(IItem item)
+        public bool IsEquipped;
+        
+        
+        public ItemInfo(IItem item, bool isEquipped)
         {
             this.Name = item.Name;
             this.Description = item.Description;
@@ -70,6 +72,7 @@ namespace Game.Inventory
             this.MaxStackSize = item.MaxStackSize;
             this.CurrentStackSize = item.CurrentStackSize;
             this.ItemType = item.GetItemType();
+            this.IsEquipped = isEquipped;
         }
         
         public static bool operator ==(ItemInfo one, ItemInfo two)

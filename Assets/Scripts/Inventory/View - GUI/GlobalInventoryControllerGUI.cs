@@ -91,10 +91,7 @@ namespace Game.Inventory.GUI
         {
             if (_playerInventory.EquipItemAnywhere(slotId, out var responseSlotsInfo) )
             {
-                foreach (var slotInfo in responseSlotsInfo)
-                {
-                    UpdateItemInfo(slotInfo.SlotId, slotInfo.Item);
-                }
+                UpdateSlots(responseSlotsInfo);
             }
         }
         
@@ -108,14 +105,27 @@ namespace Game.Inventory.GUI
             if (_playerInventory.EquipItem(_slotItemBeingDragged, toSlotId, out var responseSlotsInfo))
             {
                 //No other containers besides the item being dragged and the target drop should be changed right?
-                foreach (var slotInfo in responseSlotsInfo)
-                {
-                    UpdateItemInfo(slotInfo.SlotId, slotInfo.Item);
-                }
+                UpdateSlots(responseSlotsInfo);
             }
             else
             {
                 ReturnItemToSlotPosition(_slotItemBeingDragged);
+            }
+        }
+
+        private void UpdateSlots(List<SlotInfo> responseSlotsInfo)
+        {
+            foreach (var slotInfo in responseSlotsInfo)
+            {
+                UpdateItemInfo(slotInfo.SlotId, slotInfo.Item);
+            }
+        }
+
+        public void UnEquipItem(SlotIdentifier slotId)
+        {
+            if (_playerInventory.UnEquipItem(slotId, out var responseSlotsInfo))
+            {
+                UpdateSlots(responseSlotsInfo);
             }
         }
 

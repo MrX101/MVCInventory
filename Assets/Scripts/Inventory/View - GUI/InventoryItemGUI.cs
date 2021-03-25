@@ -26,8 +26,11 @@ namespace Game.Inventory.GUI
 
         public Action<InventoryItemGUI> OnBeginDragEvent;
         public Action<InventoryItemGUI> OnEndDragEvent;
-        public Action<InventoryItemGUI> OnClickedEvent;
         public Action<InventoryItemGUI> OnDropEvent;
+        
+        public Action<InventoryItemGUI> OnClickedEvent;
+        public Action<InventoryItemGUI> OnDoubleClickedEvent;
+        public Action<InventoryItemGUI> OnRightClickedEvent;
 
         private Cooldown _doubleClickCooldown = new Cooldown(0.3f);
         
@@ -43,6 +46,16 @@ namespace Game.Inventory.GUI
             _stackAmount = GetComponentInChildren<TextMeshProUGUI>();
             _image = GetComponent<Image>();
             _canvas = GetComponent<Canvas>();
+        }
+
+        private void OnEnable()
+        {
+            OnDoubleClickedEvent += HandleDoubleOnDoubleClicked;
+        }
+
+        private void OnDisable()
+        {
+            OnDoubleClickedEvent -= HandleDoubleOnDoubleClicked;
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -93,23 +106,25 @@ namespace Game.Inventory.GUI
             OnEndDragEvent?.Invoke(this);
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        public virtual void OnPointerClick(PointerEventData eventData)
         {
             if (eventData.button == PointerEventData.InputButton.Left)
             {
                 if (_doubleClickCooldown.HasStarted() && !_doubleClickCooldown.HasFinished(true))
                 {
-                    EquipInFirstAvailable();
+                    OnDoubleClickedEvent?.Invoke(this);
                     //Debug.Log("Double Click");
                 }
                 else
                 {
                     _doubleClickCooldown.StartCountDown();
+                    OnClickedEvent?.Invoke(this);
                     //Debug.Log("Left Click");
                 }
             }
             else if (eventData.button == PointerEventData.InputButton.Right)
             {
+                OnRightClickedEvent?.Invoke(this);
                 //Debug.Log("Right Click");
             }
             OnClickedEvent?.Invoke(this);
@@ -121,9 +136,26 @@ namespace Game.Inventory.GUI
             UpdateSpriteAndStackSize();
         }
 
-        private void EquipInFirstAvailable()
+        private void HandleDoubleOnDoubleClicked(InventoryItemGUI inventoryItem)
         {
-            _inventoryControllerGUI.EquipItemInAnyAvailableSlot(_slotId);
+            if (!_item.IsEquipped)
+            {
+                EquipInFirstAvailable(_slotId);
+            }
+            else
+            {
+                UnEquipItem(_slotId);
+            }
+        }
+        
+        private void EquipInFirstAvailable(SlotIdentifier slotId)
+        {
+            _inventoryControllerGUI.EquipItemInAnyAvailableSlot(slotId);
+        }
+        
+        private void UnEquipItem(SlotIdentifier slotId)
+        {
+            _inventoryControllerGUI.UnEquipItem(slotId);
         }
 
         public void PlaceInSlot(RectTransform rect, SlotIdentifier slotId)

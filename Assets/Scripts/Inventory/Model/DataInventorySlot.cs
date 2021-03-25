@@ -168,7 +168,7 @@ namespace Game.Inventory
         {
             if (HasItem())
             {
-                return new ItemInfo(_item);
+                return new ItemInfo(_item, _isEquipped);
             }
             return ItemInfo.NULL;
         }
