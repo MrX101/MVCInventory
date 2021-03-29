@@ -1,46 +1,73 @@
 
   
 
-Short Gif Of Inventory System https://imgur.com/a/d4Vpix6
+  
+
+Short Gif Of Inventory System https://imgur.com/a/kuMIAdm
 
   
 
-![](https://i.imgur.com/P97sI7w.png)
+  
 
+![](https://i.imgur.com/t0WekMz.png)
+
+  
+  
 
   
 
 This is an example project to show my coding skill. It is an inventory system coded in the MVC(Model, View, Controller) coding architecture. To ensure that the functionality is not effected by the Graphical User interface and as such any number of future changes to the GUI could be done and the functionality would not be effected.
 
   
+
   
 
 **Currently missing features are:**
 
+  
+
 * Adding More Unit Tests
 
-* Add tooltips
+  
+
 
 * Make the inventory functions return a response based enum, instead of success/fail bool. To indicate why the operation failed.
 
+  
+
 * Adding Universal Item Manager that stores all items and other inspectors simply show the item list with a searchbox.
+
+  
 
 * World items dropping/pickups. ~Partially implemented.
 
+  
+
 * Destroying Items in GUI
+
+  
 
 * Make a better inspector for setting inventories settings.
 
   
+
   
 
 **Major Missing Features:**
 
+  
+
 * Add Network Support
+
+  
 
 * Add Async requests/responses.
 
+  
+
 * Add Database Support
+
+  
 
   
 
@@ -48,11 +75,19 @@ This is an example project to show my coding skill. It is an inventory system co
 
   
 
+  
+
 Install Unity Hub from https://unity3d.com/get-unity/download
+
+  
 
 You will need to make an account, if you don’t have one
 
+  
+
 After Installing, open the program, login then find 2019.4.19f in this website https://unity3d.com/get-unity/download/archive and click the UnityHub Button for that version, it should popup asking you to install with UnityHub.
+
+  
 
   
 
@@ -60,7 +95,11 @@ Now back to your git application, after you clone it and download the files, run
 
   
 
+  
+
 **Basic Documentation**
+
+  
 
   
 
@@ -68,27 +107,49 @@ Now back to your git application, after you clone it and download the files, run
 
   
 
+  
+
 Please note that a monobehaviour is basically a GameObject that exists within a scene and calls numerous methods during runtime.
+
+  
 
   
 
 Awake - Start of game loading or when object is created/enabled.
 
+  
+
 OnEnable - After Awake, shortly after the object is enabled/created.
+
+  
 
 Start - Is similar to Awake, but called after OnEnable.
 
+  
+
 Update - Called once everyframe after being created/enabled.
+
+  
 
 OnValidate - Called when values are changed in the Unity Editor.
 
+  
+
 OnDisable - Called when the object is disabled.
+
+  
 
 Also note that this is using the builtin Unity Test framework to allow Unit testing via NUnit. Though the Tests themselves are run in the Unity Editor via GUI.
 
+  
+
 <img  src="https://i.imgur.com/fNA7rL6.png"  width=500  >
 
+  
+
 <img  src="https://i.imgur.com/XpxtIxy.png"  width=300  >
+
+  
 
   
 
@@ -96,18 +157,26 @@ As can be seen in image above. The code for the inventory is separated into the 
 
   
 
+  
+
 The Core components of the Data are the IItem.cs, DataInventoryContainer.cs and DataInventorySlot.cs
 
   
+
 <img  src="https://i.imgur.com/T2BZJsZ.png"  width=500  >
 
+  
+  
 
 IItem is simply a basic interface to give us the core functionality of managing items and allow us the flexibility of making anything we might need in future, into an item. Though for simplicity sake there is currently only the BaseItem inheriting from the IItem interface.
 
   
+
   
 
 As should be obvious from their name, an inventory will have a number of Containers and each container will have a number of inventory slots, which might have a singular item stored.
+
+  
 
   
 
@@ -115,7 +184,11 @@ Now in theory the Inventory Class itself might have also been in the Data Catego
 
   
 
+  
+
 Please note the DataEquiptmentContainer inherits from the DataInventoryContainer, and overrides the StoreItem method, so that it also equips said item.
+
+  
 
   
 
@@ -123,13 +196,21 @@ The WeaponWheelContainer is not yet implemented, but it would simply be an equip
 
   
 
+  
+
 The GUI components have their respective data versions, the containers, slots, items and equipment Slots. All with GUI at the end of their class name.
+
+  
 
 The GlobalInventoryControllerGUI is what directly interacts with the Inventory class and makes requests and tells the other GUI components what to change/update.
 
   
 
+  
+
 The GUI InventorySlots and Items are using the Unity Interfaces for handling pointer clicks/movements/dragging (IDropHandler ,IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler). These interfaces are very simple and only contain a single method, that will be called when their events occur. Though they unfortunately don’t have the best hitbox detection with dropping items into the itemslots. So I might replace them in future with a version that can calculate the closest slot where the dragging stopped.
+
+  
 
   
 

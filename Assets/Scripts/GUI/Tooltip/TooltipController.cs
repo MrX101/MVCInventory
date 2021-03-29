@@ -7,8 +7,8 @@ namespace Game.GUI.Tooltip
     public class TooltipController : ScriptableObject
     {
        
-        public Tooltip _tooltip;
-        public ItemTooltip _itemTooltip;
+        [HideInInspector]public Tooltip _tooltip;
+        [HideInInspector]public ItemTooltip _itemTooltip;
         
 
         public void ShowItemTooltip(string itemName,int amount, string description, Sprite icon )
