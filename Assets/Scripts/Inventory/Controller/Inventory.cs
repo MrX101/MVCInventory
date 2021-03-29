@@ -74,22 +74,34 @@ namespace Game.Inventory
                 }
             }
         }
-
-        //Returns the amount left from the amount.
-        public int ConsumeAmmo(string ammoId, int amount, string containerId = "Any")
+        //todo Finish Ammo functions 
+        ///From any Container, Returns the amount left from the amount if there wasn't enough.
+        public bool ConsumeAmmo(string ammoId, int amount, out int amountConsumed)
         {
-            if (containerId != "Any" && _containers.ContainsKey(containerId))
+            amountConsumed = amount;
+            foreach (var KVP in _containers)
+            {
+                amount = ConsumeAmmoInternal(ammoId, amount, KVP.Value);
+            }
+
+            if (amount > 0)
+            {
+                amountConsumed = amountConsumed - amount;
+            }
+            return false;
+        }
+    
+        ///From a specific Container
+        public bool ConsumeAmmo(string ammoId, int amount, string containerId, out int amountConsumed)
+        {
+            amountConsumed = amount;
+            if (!_containers.ContainsKey(containerId)) { return false; }
+            
+            if (_containers.ContainsKey(containerId))
             {
                 amount = ConsumeAmmoInternal(ammoId, amount, _containers[containerId]);
             }
-            else
-            {
-                foreach (var KVP in _containers)
-                {
-                    amount = ConsumeAmmoInternal(ammoId, amount, KVP.Value);
-                }
-            }
-            return amount;
+            return false;
         }
 
         private int ConsumeAmmoInternal(string ammoId, int amount, DataInventoryContainer container)

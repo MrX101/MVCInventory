@@ -1,4 +1,5 @@
 ﻿using System;
+using Game.GUI.Tooltip;
 using Game.Timers;
 using TMPro;
 using UnityEngine;
@@ -7,9 +8,11 @@ using UnityEngine.UI;
 
 namespace Game.Inventory.GUI
 {
-    public class InventoryItemGUI : MonoBehaviour,IDropHandler ,IDragHandler, IBeginDragHandler, IEndDragHandler, IPointerClickHandler
+    public class InventoryItemGUI : MonoBehaviour,IDropHandler ,IDragHandler, IBeginDragHandler, IEndDragHandler,IPointerEnterHandler, IPointerExitHandler ,IPointerClickHandler
     {
         [SerializeField]protected GlobalInventoryControllerGUI _inventoryControllerGUI;
+
+        [SerializeField]private TooltipController _tooltipController;
         
         private SlotIdentifier _slotId;
 
@@ -31,6 +34,8 @@ namespace Game.Inventory.GUI
         public Action<InventoryItemGUI> OnClickedEvent;
         public Action<InventoryItemGUI> OnDoubleClickedEvent;
         public Action<InventoryItemGUI> OnRightClickedEvent;
+        public Action<ItemInfo> OnMouseOverEnter;
+        public Action<ItemInfo> OnMouseOverExit;
 
         private Cooldown _doubleClickCooldown = new Cooldown(0.3f);
         
@@ -51,11 +56,16 @@ namespace Game.Inventory.GUI
         private void OnEnable()
         {
             OnDoubleClickedEvent += HandleDoubleOnDoubleClicked;
+            OnMouseOverEnter += (item) => _tooltipController.ShowItemTooltip(item.Name,item.CurrentStackSize, item.Description, item.Sprite);
+            OnMouseOverExit += (item) => _tooltipController.HideItemTooltip();
+            
         }
 
         private void OnDisable()
         {
             OnDoubleClickedEvent -= HandleDoubleOnDoubleClicked;
+            OnMouseOverEnter -= (item) => _tooltipController.ShowItemTooltip(item.Name,item.CurrentStackSize, item.Description, item.Sprite);
+            OnMouseOverExit -= (item) => _tooltipController.HideItemTooltip();
         }
 
         public void OnDrag(PointerEventData eventData)
@@ -196,6 +206,18 @@ namespace Game.Inventory.GUI
         {
             OnDropEvent?.Invoke(this);
             _inventoryControllerGUI.ItemDroppedIn(_slotId);
+        }
+
+        public void OnPointerEnter(PointerEventData eventData)
+        {
+            Debug.Log("OnPointerEnter");
+            OnMouseOverEnter?.Invoke(_item);
+        }
+
+        public void OnPointerExit(PointerEventData eventData)
+        {
+            Debug.Log("OnPointerExit");
+            OnMouseOverExit?.Invoke(_item);
         }
     }
 }

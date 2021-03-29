@@ -56,6 +56,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _inventoryControllerGUI: {fileID: 11400000, guid: 447156d0c71dce64eb71f9b64967eff5,
     type: 2}
+  _tooltipController: {fileID: 11400000, guid: 41be1cbd942fa4642b4759d2757cce6a, type: 2}
 --- !u!222 &4609401290435667869
 CanvasRenderer:
   m_ObjectHideFlags: 0
