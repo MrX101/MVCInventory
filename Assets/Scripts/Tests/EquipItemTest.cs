@@ -9,6 +9,11 @@ namespace Game.Test
 {
     public class EquipItemTest
     {
+        
+        //todo Tests to add
+        // Swap equipped items, of different itemTypes allowed.
+        // Swap equipped items, of different itemTypes allowed. fromItem can fit, toItem must go into a storage container. With Container Available and Container Not Available
+        // Stacking items tests
         [Test]
         public void EquipItem_FromInventory_True()
         {
